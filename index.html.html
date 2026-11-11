@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亲爱的，生日快乐！</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #FFF0F5;
+            color: #5D3A4A;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            color: #5D3A4A;
+            letter-spacing: 2px;
+        }
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+        .header .wish {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B9D, #C2185B);
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 1.05em;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(194, 24, 91, 0.3);
+        }
+        .section-title {
+            font-size: 1.3em;
+            margin: 30px 0 15px;
+            padding-left: 12px;
+            border-left: 4px solid #C2185B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .photo-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .photo-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            cursor: pointer;
+            display: block;
+        }
+        .photo-name {
+            padding: 8px 12px;
+            font-size: 0.85em;
+            text-align: center;
+            opacity: 0.7;
+        }
+        .audio-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .audio-name {
+            font-size: 1em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .audio-card audio {
+            width: 100%;
+        }
+        .empty-tip {
+            text-align: center;
+            padding: 30px;
+            opacity: 0.5;
+            font-style: italic;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+            font-size: 0.9em;
+        }
+        /* 灯箱 */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 92vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.6em; }
+            .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .photo-card img { height: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎂 亲爱的，生日快乐！ 🎂</h1>
+            <div class="subtitle">致我最爱的男朋友</div>
+            <div class="wish">💝 愿你永远快乐，我的爱人！ 💝</div>
+        </div>
+
+        <div class="section-title">📸 我们的照片</div>
+        <div class="photo-grid">
+            <p class="empty-tip">暂无照片，请在 photos 文件夹中添加照片~</p>
+        </div>
+
+        <div class="section-title">🎧 想对你说的话</div>
+        <div class="audio-list">
+            <p class="empty-tip">暂无语音，请在 audio 文件夹中添加语音文件~</p>
+        </div>
+
+        <div class="footer">
+            <p>❤️ 爱你的人 制作 ❤️</p>
+        </div>
+    </div>
+
+    <!-- 灯箱 -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="preview">
+    </div>
+
+    <script>
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lb.classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+</html>
