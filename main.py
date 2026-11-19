@@ -56,12 +56,10 @@ def get_files(folder, exts):
 
 def build_html(photos, audios, config):
     """生成HTML页面内容（美化版 + 互动版：吹蜡烛后展开照片/语音）
-    标题区：礼物盒🎁 + 飘浮星星✨
-    吹蜡烛区：纯 CSS 插画风蛋糕
-    照片标题：两行显示 + hover tooltip + 灯箱底部完整名
-    媒体文件使用相对路径引用，不再内联 Base64。"""
+    背景音乐《玻璃》放在「我们的照片」标题上方，吹蜡烛展开后自动播放，
+    点开语音时自动暂停背景音乐。媒体文件使用相对路径引用。"""
 
-    # ---- 照片卡片（相对路径 + title + data-name） ----
+    # ---- 照片卡片 ----
     photo_cards = []
     for p in photos:
         rel_path = p.replace("\\", "/")
@@ -75,7 +73,7 @@ def build_html(photos, audios, config):
     photos_html = "".join(photo_cards) if photo_cards else \
         '<p class="empty-tip">暂无照片，请在 photos 文件夹中添加照片～</p>'
 
-    # ---- 语音卡片（相对路径） ----
+    # ---- 语音卡片 ----
     audio_cards = []
     for a in audios:
         ext = os.path.splitext(a)[1].lower()
@@ -92,7 +90,7 @@ def build_html(photos, audios, config):
                 <span class="audio-icon">🎙️</span>
                 <span class="audio-name">{name}</span>
             </div>
-            <audio controls preload="metadata">
+            <audio controls preload="metadata" class="voice-audio">
                 <source src="{rel_path}" type="{mime}">
             </audio>
         </div>''')
@@ -118,7 +116,6 @@ def build_html(photos, audios, config):
         overflow-x: hidden;
     }
 
-    /* 漂浮爱心背景 */
     .floating-hearts {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         pointer-events: none; z-index: 0; overflow: hidden;
@@ -137,7 +134,6 @@ def build_html(photos, audios, config):
 
     .page-wrap { position: relative; z-index: 1; }
 
-    /* ===== 英雄区（礼物盒 + 星星装饰） ===== */
     .hero {
         text-align: center; padding: 64px 24px 8px; position: relative;
         transition: padding 0.6s ease;
@@ -145,10 +141,8 @@ def build_html(photos, audios, config):
     .hero.compact { padding: 40px 24px 6px; }
 
     .hero-deco {
-        position: relative;
-        display: inline-block;
-        width: 124px; height: 88px;
-        margin-bottom: 2px;
+        position: relative; display: inline-block;
+        width: 124px; height: 88px; margin-bottom: 2px;
     }
     .gift-emoji {
         position: absolute; left: 50%; top: 50%;
@@ -159,24 +153,19 @@ def build_html(photos, audios, config):
         transition: font-size 0.6s ease;
     }
     .hero.compact .gift-emoji { font-size: 44px; }
-
     @keyframes giftBounce {
         0%, 100% { transform: translate(-50%, -50%) rotate(-4deg) scale(1); }
         50% { transform: translate(-50%, -62%) rotate(4deg) scale(1.06); }
     }
 
     .spark {
-        position: absolute;
-        font-size: 15px;
-        opacity: 0.85;
-        animation: twinkle 2.2s ease-in-out infinite;
-        user-select: none;
+        position: absolute; font-size: 15px; opacity: 0.85;
+        animation: twinkle 2.2s ease-in-out infinite; user-select: none;
     }
     .spark.s1 { left: 2px; top: 8px; animation-delay: 0s; }
     .spark.s2 { right: 0px; top: 16px; animation-delay: 0.5s; }
     .spark.s3 { left: 14px; bottom: 2px; animation-delay: 1s; }
     .spark.s4 { right: 12px; bottom: 8px; animation-delay: 1.5s; }
-
     @keyframes twinkle {
         0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.35; }
         50% { transform: scale(1.15) rotate(20deg); opacity: 0.95; }
@@ -215,15 +204,11 @@ def build_html(photos, audios, config):
         50% { left: 120%; }
     }
 
-    /* ===== 互动区：吹蜡烛 ===== */
     .interact-section {
         max-width: 720px; margin: 30px auto 0; padding: 0 20px;
         transition: opacity 0.6s ease, transform 0.6s ease, margin 0.6s ease;
     }
-    .interact-section.done {
-        opacity: 0.9;
-        transform: scale(0.98);
-    }
+    .interact-section.done { opacity: 0.9; transform: scale(0.98); }
 
     .cake-card {
         background: rgba(255, 255, 255, 0.9);
@@ -240,7 +225,6 @@ def build_html(photos, audios, config):
         background: radial-gradient(circle, rgba(255, 214, 230, 0.75), transparent 70%);
         pointer-events: none;
     }
-
     .cake-card h3 {
         font-size: 1.12rem; color: #b04070; margin-bottom: 6px;
         font-weight: 700; position: relative;
@@ -249,14 +233,10 @@ def build_html(photos, audios, config):
         font-size: 0.85rem; color: #a88a96; margin-bottom: 16px; position: relative;
     }
 
-    /* ===== CSS 插画风蛋糕 ===== */
     .cake-scene {
-        position: relative;
-        width: 200px; height: 196px;
-        margin: 0 auto;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        user-select: none;
+        position: relative; width: 200px; height: 196px;
+        margin: 0 auto; cursor: pointer;
+        -webkit-tap-highlight-color: transparent; user-select: none;
         transition: transform 0.2s ease;
     }
     .cake-scene:active { transform: scale(0.97); }
@@ -269,11 +249,9 @@ def build_html(photos, audios, config):
         box-shadow: 0 8px 18px rgba(190, 100, 140, 0.22);
         z-index: 1;
     }
-
     .cake-layer {
         position: absolute; left: 50%; transform: translateX(-50%);
-        border-radius: 10px 10px 8px 8px;
-        z-index: 2;
+        border-radius: 10px 10px 8px 8px; z-index: 2;
     }
     .layer-bottom {
         bottom: 18px; width: 148px; height: 46px;
@@ -285,7 +263,6 @@ def build_html(photos, audios, config):
         background: linear-gradient(180deg, #ffd1e2, #f7a9c8);
         box-shadow: inset 0 -5px 0 rgba(180, 70, 120, 0.14);
     }
-
     .cream {
         position: absolute; left: 50%; transform: translateX(-50%);
         height: 16px; border-radius: 12px;
@@ -295,21 +272,17 @@ def build_html(photos, audios, config):
     }
     .cream.c1 { bottom: 58px; width: 150px; }
     .cream.c2 { bottom: 94px; width: 122px; }
-
     .cream-drip {
         position: absolute; left: 50%; transform: translateX(-50%);
-        width: 150px; height: 14px; bottom: 52px;
-        z-index: 4;
+        width: 150px; height: 14px; bottom: 52px; z-index: 4;
         background:
             radial-gradient(circle at 8px 0, #ffffff 7px, transparent 8px) 0 0/20px 14px repeat-x;
     }
-
     .berry {
         position: absolute; width: 16px; height: 16px;
         background: radial-gradient(circle at 35% 30%, #ff6b81, #d81b4a);
         border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        box-shadow: 0 2px 5px rgba(190, 30, 70, 0.35);
-        z-index: 5;
+        box-shadow: 0 2px 5px rgba(190, 30, 70, 0.35); z-index: 5;
     }
     .berry::after {
         content: ''; position: absolute; top: -4px; left: 50%;
@@ -321,25 +294,18 @@ def build_html(photos, audios, config):
     .berry.b2 { right: 30px; bottom: 96px; }
     .berry.b3 { left: 62px; bottom: 60px; }
     .berry.b4 { right: 62px; bottom: 60px; }
-
     .candle {
         position: absolute; left: 50%; bottom: 128px;
         transform: translateX(-50%);
         width: 14px; height: 36px; border-radius: 4px;
-        background: repeating-linear-gradient(
-            180deg,
-            #ff8fab 0 6px,
-            #ffffff 6px 12px
-        );
-        box-shadow: 0 2px 6px rgba(190, 80, 120, 0.25);
-        z-index: 6;
+        background: repeating-linear-gradient(180deg, #ff8fab 0 6px, #ffffff 6px 12px);
+        box-shadow: 0 2px 6px rgba(190, 80, 120, 0.25); z-index: 6;
     }
     .candle::after {
         content: ''; position: absolute; top: -5px; left: 50%;
         transform: translateX(-50%);
         width: 2px; height: 6px; background: #7a4a58; border-radius: 2px;
     }
-
     .candle-flame {
         position: absolute; left: 50%; bottom: 164px;
         transform: translateX(-50%);
@@ -349,35 +315,27 @@ def build_html(photos, audios, config):
         box-shadow: 0 0 18px 6px rgba(255, 170, 60, 0.45);
         transform-origin: 50% 100%;
         animation: flameFlicker 0.55s ease-in-out infinite alternate;
-        z-index: 7;
-        transition: opacity 0.4s ease, transform 0.4s ease;
+        z-index: 7; transition: opacity 0.4s ease, transform 0.4s ease;
     }
     @keyframes flameFlicker {
         0% { transform: translateX(-50%) scale(1) rotate(-3deg); }
         100% { transform: translateX(-50%) scale(1.1, 1.18) rotate(3deg); }
     }
     .candle-flame.out {
-        opacity: 0;
-        transform: translateX(-50%) scale(0.3);
-        animation: none;
+        opacity: 0; transform: translateX(-50%) scale(0.3); animation: none;
     }
-
     .flame-glow {
         position: absolute; left: 50%; bottom: 150px;
         transform: translateX(-50%);
         width: 90px; height: 90px; border-radius: 50%;
         background: radial-gradient(circle, rgba(255, 200, 90, 0.35), transparent 65%);
-        z-index: 0;
-        transition: opacity 0.5s ease;
-        pointer-events: none;
+        z-index: 0; transition: opacity 0.5s ease; pointer-events: none;
     }
     .flame-glow.out { opacity: 0; }
-
     .smoke {
         position: absolute; left: 50%; bottom: 168px;
         transform: translateX(-50%);
-        font-size: 16px; opacity: 0;
-        transition: opacity 0.4s ease;
+        font-size: 16px; opacity: 0; transition: opacity 0.4s ease;
         pointer-events: none; z-index: 8;
     }
     .smoke.show { opacity: 0.75; animation: smokeRise 1.9s ease-out forwards; }
@@ -385,7 +343,6 @@ def build_html(photos, audios, config):
         0% { transform: translateX(-50%) translateY(0) scale(0.8); opacity: 0.75; }
         100% { transform: translateX(-50%) translateY(-52px) scale(1.7); opacity: 0; }
     }
-
     .blow-btn {
         margin-top: 18px; display: inline-flex; align-items: center; gap: 8px;
         padding: 12px 30px; border: none; border-radius: 999px;
@@ -402,14 +359,12 @@ def build_html(photos, audios, config):
         opacity: 0.55; cursor: default; transform: none;
         box-shadow: 0 6px 18px rgba(231, 84, 128, 0.2);
     }
-
     .blessing-msg {
         margin-top: 14px; font-size: 0.95rem; font-weight: 600;
         color: #c94b7a; min-height: 1.4em; transition: opacity 0.4s ease;
         position: relative;
     }
 
-    /* ===== 内容区（吹蜡烛后显示） ===== */
     .content-section {
         max-width: 1080px; margin: 0 auto; padding: 0 20px;
         max-height: 0; opacity: 0; overflow: hidden;
@@ -420,9 +375,40 @@ def build_html(photos, audios, config):
         pointer-events: none;
     }
     .content-section.open {
-        max-height: 12000px; opacity: 1; transform: none;
-        pointer-events: auto;
+        max-height: 12000px; opacity: 1; transform: none; pointer-events: auto;
     }
+
+    /* ===== 背景音乐条（照片标题上方） ===== */
+    .bgm-bar {
+        margin: 0 auto 8px; max-width: 560px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border-radius: 18px; padding: 12px 18px;
+        box-shadow: 0 6px 22px rgba(200, 100, 140, 0.12);
+        display: flex; align-items: center; gap: 12px;
+        border: 1px solid rgba(255, 200, 220, 0.6);
+    }
+    .bgm-icon {
+        font-size: 1.3rem; flex-shrink: 0;
+        animation: noteSpin 3.2s linear infinite;
+        display: inline-block;
+    }
+    @keyframes noteSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .bgm-body { flex: 1; min-width: 0; }
+    .bgm-title {
+        font-size: 0.88rem; font-weight: 600; color: #b04070;
+        margin-bottom: 4px; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .bgm-body audio { width: 100%; height: 34px; }
+    .bgm-tip {
+        font-size: 0.75rem; color: #a88a96; margin-top: 4px;
+        display: none;
+    }
+    .bgm-tip.show { display: block; }
 
     .section-title {
         display: flex; align-items: center; gap: 10px;
@@ -438,38 +424,32 @@ def build_html(photos, audios, config):
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 18px;
     }
-
     .photo-card {
         background: #fff; border-radius: 18px; overflow: hidden;
         box-shadow: 0 6px 20px rgba(180, 60, 110, 0.08);
         transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease,
                     opacity 0.6s ease;
         cursor: pointer; position: relative;
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
+        opacity: 0; transform: translateY(30px) scale(0.96);
     }
-    .photo-card.show {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    .photo-card.show { opacity: 1; transform: translateY(0) scale(1); }
     .photo-card.show:hover {
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 16px 36px rgba(180, 60, 110, 0.22);
     }
-
     .photo-card img {
         width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
         display: block; transition: transform 0.5s ease;
     }
     .photo-card.show:hover img { transform: scale(1.06); }
 
-    /* 方案一：两行显示，超出省略号 */
     .caption {
         padding: 10px 12px; font-size: 0.85rem; color: #7a5a68;
         text-align: center;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
         overflow: hidden;
         line-height: 1.35;
         word-break: break-all;
@@ -480,15 +460,10 @@ def build_html(photos, audios, config):
         background: #fff; border-radius: 18px; padding: 16px 18px; margin-bottom: 16px;
         box-shadow: 0 6px 20px rgba(180, 60, 110, 0.08);
         transition: box-shadow 0.3s ease, opacity 0.6s ease, transform 0.6s ease;
-        opacity: 0;
-        transform: translateY(24px);
+        opacity: 0; transform: translateY(24px);
     }
-    .audio-card.show {
-        opacity: 1;
-        transform: none;
-    }
+    .audio-card.show { opacity: 1; transform: none; }
     .audio-card.show:hover { box-shadow: 0 10px 28px rgba(180, 60, 110, 0.14); }
-
     .audio-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .audio-icon { font-size: 1.15rem; }
     .audio-name { font-weight: 600; font-size: 0.95rem; color: #5a3a48; }
@@ -499,9 +474,8 @@ def build_html(photos, audios, config):
         font-style: italic; font-size: 0.92rem;
     }
 
-    /* ===== 页脚 ===== */
     .footer {
-        text-align: center; padding: 60px 20px 44px;
+        text-align: center; padding: 50px 20px 34px;
         color: #a88a96; font-size: 0.9rem;
     }
     .footer .heart {
@@ -515,7 +489,6 @@ def build_html(photos, audios, config):
         45% { transform: scale(1.2); }
     }
 
-    /* ===== 灯箱（方案三：底部显示完整名） ===== */
     .lightbox {
         display: none; position: fixed; inset: 0;
         background: rgba(20, 10, 15, 0.92);
@@ -543,7 +516,6 @@ def build_html(photos, audios, config):
         to { transform: scale(1); opacity: 1; }
     }
 
-    /* 撒花彩带 */
     .confetti-piece {
         position: fixed; width: 10px; height: 10px; z-index: 9998;
         pointer-events: none; border-radius: 2px;
@@ -554,7 +526,6 @@ def build_html(photos, audios, config):
         100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
     }
 
-    /* 点击爱心 */
     .pop-heart {
         position: fixed; pointer-events: none; z-index: 9998; font-size: 1.6rem;
         animation: popHeart 0.9s ease-out forwards;
@@ -587,6 +558,8 @@ def build_html(photos, audios, config):
         .berry.b3 { left: 52px; }
         .berry.b4 { right: 52px; }
         .lightbox-name { font-size: 0.82rem; }
+        .bgm-bar { padding: 10px 14px; gap: 10px; }
+        .bgm-icon { font-size: 1.1rem; }
     }
     """
 
@@ -606,6 +579,38 @@ def build_html(photos, audios, config):
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeLightbox();
     });
+
+    /* ===== 背景音乐与语音互斥 ===== */
+    function initBgmControl() {
+        var bgm = document.getElementById('bgmAudio');
+        if (!bgm) return;
+        var voices = document.querySelectorAll('.voice-audio');
+
+        voices.forEach(function (v) {
+            v.addEventListener('play', function () {
+                if (!bgm.paused) bgm.pause();
+            });
+        });
+
+        bgm.addEventListener('play', function () {
+            voices.forEach(function (v) {
+                if (!v.paused) v.pause();
+            });
+        });
+    }
+
+    /* 尝试自动播放背景音乐；被浏览器拦截时显示手动提示 */
+    function tryPlayBgm() {
+        var bgm = document.getElementById('bgmAudio');
+        var tip = document.getElementById('bgmTip');
+        if (!bgm) return;
+        var p = bgm.play();
+        if (p && p.catch) {
+            p.catch(function () {
+                if (tip) tip.classList.add('show');
+            });
+        }
+    }
 
     /* ===== 吹蜡烛互动 ===== */
     var candleBlown = false;
@@ -638,6 +643,7 @@ def build_html(photos, audios, config):
         setTimeout(function () {
             content.classList.add('open');
             revealCards();
+            tryPlayBgm();  // 展开后自动播放背景音乐
             setTimeout(function () {
                 content.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 500);
@@ -731,6 +737,7 @@ def build_html(photos, audios, config):
     function init() {
         initFloatingHearts();
         initClickHeart();
+        initBgmControl();
         document.getElementById('blowBtn').addEventListener('click', function (e) {
             e.stopPropagation();
             blowCandles();
@@ -810,6 +817,19 @@ def build_html(photos, audios, config):
 
         <!-- 内容区：吹蜡烛后展开 -->
         <main class="content-section" id="contentSection">
+
+            <!-- 背景音乐：放在「我们的照片」标题上方 -->
+            <div class="bgm-bar" id="bgmBar">
+                <span class="bgm-icon">🎵</span>
+                <div class="bgm-body">
+                    <div class="bgm-title">玻璃</div>
+                    <audio id="bgmAudio" loop preload="auto">
+                        <source src="audio/玻璃.mp3" type="audio/mpeg">
+                    </audio>
+                    <div class="bgm-tip" id="bgmTip">点击播放器即可开始播放背景音乐 🎧</div>
+                </div>
+            </div>
+
             <h2 class="section-title">我们的照片</h2>
             <div class="gallery">
                 {photos_html}
@@ -828,7 +848,7 @@ def build_html(photos, audios, config):
 
     </div>
 
-    <!-- 灯箱：底部显示完整文件名 -->
+    <!-- 灯箱 -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <div class="lightbox-inner" onclick="event.stopPropagation()">
             <img id="lightbox-img" src="" alt="preview">
