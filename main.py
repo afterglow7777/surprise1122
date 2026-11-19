@@ -55,9 +55,10 @@ def get_files(folder, exts):
 
 
 def build_html(photos, audios, config):
-    """生成HTML页面内容（美化版 + 互动版：吹蜡烛后展开照片/语音）
-    背景音乐《玻璃》使用隐藏 audio 元素，不在页面上显示任何标题或播放条；
-    吹蜡烛展开后自动播放，点开语音时自动暂停。
+    """生成HTML页面内容（美化版 + 互动版：吹蜡烛后展开照片）
+    已删除「想对你说的话」和语音录音卡片。
+    背景音乐《玻璃》隐藏播放，吹蜡烛展开后自动播放；
+    右上角浮动按钮可手动播放/暂停背景音乐。
     媒体文件使用相对路径引用。"""
 
     # ---- 照片卡片 ----
@@ -73,31 +74,6 @@ def build_html(photos, audios, config):
 
     photos_html = "".join(photo_cards) if photo_cards else \
         '<p class="empty-tip">暂无照片，请在 photos 文件夹中添加照片～</p>'
-
-    # ---- 语音卡片 ----
-    audio_cards = []
-    for a in audios:
-        ext = os.path.splitext(a)[1].lower()
-        mime_map = {
-            '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
-            '.m4a': 'audio/mp4', '.aac': 'audio/aac'
-        }
-        mime = mime_map.get(ext, 'audio/mpeg')
-        rel_path = a.replace("\\", "/")
-        name = os.path.splitext(os.path.basename(a))[0]
-        audio_cards.append(f'''
-        <div class="audio-card">
-            <div class="audio-head">
-                <span class="audio-icon">🎙️</span>
-                <span class="audio-name">{name}</span>
-            </div>
-            <audio controls preload="metadata" class="voice-audio">
-                <source src="{rel_path}" type="{mime}">
-            </audio>
-        </div>''')
-
-    audios_html = "".join(audio_cards) if audio_cards else \
-        '<p class="empty-tip">暂无语音，请在 audio 文件夹中添加语音文件～</p>'
 
     # ---- CSS ----
     css = """
@@ -425,19 +401,6 @@ def build_html(photos, audios, config):
         min-height: calc(0.85rem * 1.35 * 2 + 20px);
     }
 
-    .audio-card {
-        background: #fff; border-radius: 18px; padding: 16px 18px; margin-bottom: 16px;
-        box-shadow: 0 6px 20px rgba(180, 60, 110, 0.08);
-        transition: box-shadow 0.3s ease, opacity 0.6s ease, transform 0.6s ease;
-        opacity: 0; transform: translateY(24px);
-    }
-    .audio-card.show { opacity: 1; transform: none; }
-    .audio-card.show:hover { box-shadow: 0 10px 28px rgba(180, 60, 110, 0.14); }
-    .audio-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .audio-icon { font-size: 1.15rem; }
-    .audio-name { font-weight: 600; font-size: 0.95rem; color: #5a3a48; }
-    .audio-card audio { width: 100%; height: 40px; border-radius: 8px; }
-
     .empty-tip {
         text-align: center; padding: 30px; opacity: 0.5;
         font-style: italic; font-size: 0.92rem;
@@ -456,6 +419,51 @@ def build_html(photos, audios, config):
         15% { transform: scale(1.3); }
         30% { transform: scale(1); }
         45% { transform: scale(1.2); }
+    }
+
+    /* ===== 背景音乐浮窗按钮 ===== */
+    .bgm-float {
+        position: fixed; top: 18px; right: 18px; z-index: 9997;
+        display: flex; align-items: center; gap: 8px;
+        padding: 9px 16px; border: none; border-radius: 999px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 6px 20px rgba(200, 80, 130, 0.22);
+        border: 1px solid rgba(255, 200, 220, 0.7);
+        cursor: pointer; font-family: inherit;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    .bgm-float:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(200, 80, 130, 0.32);
+    }
+    .bgm-float:active { transform: scale(0.95); }
+    .bgm-float-icon {
+        font-size: 1.05rem; line-height: 1;
+        display: inline-block;
+    }
+    .bgm-float.playing .bgm-float-icon {
+        animation: noteSpin 2.4s linear infinite;
+    }
+    @keyframes noteSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .bgm-float-text {
+        font-size: 0.8rem; font-weight: 600; color: #b04070;
+        white-space: nowrap;
+    }
+    .bgm-float.playing {
+        background: rgba(255, 240, 246, 0.92);
+    }
+    .bgm-float.paused .bgm-float-text { color: #a88a96; }
+    .bgm-float.paused { background: rgba(255, 255, 255, 0.78); }
+
+    @media (max-width: 560px) {
+        .bgm-float { top: 12px; right: 12px; padding: 8px 13px; gap: 6px; }
+        .bgm-float-text { font-size: 0.75rem; }
     }
 
     .lightbox {
@@ -547,37 +555,74 @@ def build_html(photos, audios, config):
         if (e.key === 'Escape') closeLightbox();
     });
 
-    /* ===== 隐藏的背景音乐控制（不显示任何 UI） ===== */
-    function initBgmControl() {
+    /* ===== 背景音乐：隐藏 audio + 浮窗按钮 ===== */
+    function updateBgmButton() {
         var bgm = document.getElementById('bgmAudio');
-        if (!bgm) return;
-        var voices = document.querySelectorAll('.voice-audio');
-
-        // 任意语音开始播放时，暂停背景音乐
-        voices.forEach(function (v) {
-            v.addEventListener('play', function () {
-                if (!bgm.paused) bgm.pause();
-            });
-        });
-
-        // 背景音乐开始播放时，暂停所有语音
-        bgm.addEventListener('play', function () {
-            voices.forEach(function (v) {
-                if (!v.paused) v.pause();
-            });
-        });
+        var btn = document.getElementById('bgmFloat');
+        if (!bgm || !btn) return;
+        if (bgm.paused) {
+            btn.classList.remove('playing');
+            btn.classList.add('paused');
+            btn.querySelector('.bgm-float-icon').textContent = '🔇';
+            btn.querySelector('.bgm-float-text').textContent = '播放玻璃';
+        } else {
+            btn.classList.remove('paused');
+            btn.classList.add('playing');
+            btn.querySelector('.bgm-float-icon').textContent = '🎵';
+            btn.querySelector('.bgm-float-text').textContent = '暂停玻璃';
+        }
     }
 
-    /* 吹蜡烛后尝试自动播放隐藏的背景音乐 */
     function tryPlayBgm() {
         var bgm = document.getElementById('bgmAudio');
         if (!bgm) return;
         var p = bgm.play();
-        if (p && p.catch) {
-            p.catch(function () {
-                // 被浏览器拦截时静默失败，页面上没有任何提示
+        if (p && p.then) {
+            p.then(function () {
+                updateBgmButton();
+            }).catch(function () {
+                // 被浏览器拦截时静默失败，浮窗按钮显示为「播放玻璃」
+                updateBgmButton();
             });
+        } else {
+            updateBgmButton();
         }
+    }
+
+    function toggleBgm() {
+        var bgm = document.getElementById('bgmAudio');
+        if (!bgm) return;
+        if (bgm.paused) {
+            var p = bgm.play();
+            if (p && p.then) {
+                p.then(updateBgmButton).catch(updateBgmButton);
+            } else {
+                updateBgmButton();
+            }
+        } else {
+            bgm.pause();
+            updateBgmButton();
+        }
+    }
+
+    function initBgm() {
+        var bgm = document.getElementById('bgmAudio');
+        var btn = document.getElementById('bgmFloat');
+        if (!bgm || !btn) return;
+
+        // 同步按钮状态
+        bgm.addEventListener('play', updateBgmButton);
+        bgm.addEventListener('pause', updateBgmButton);
+        bgm.addEventListener('ended', updateBgmButton);
+
+        // 浮窗按钮点击：手动播放/暂停
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleBgm();
+        });
+
+        // 初始状态
+        updateBgmButton();
     }
 
     /* ===== 吹蜡烛互动 ===== */
@@ -608,10 +653,14 @@ def build_html(photos, audios, config):
         hero.classList.add('compact');
         interact.classList.add('done');
 
+        // 用户点击手势内立即尝试播放，成功率最高
+        tryPlayBgm();
+
         setTimeout(function () {
             content.classList.add('open');
             revealCards();
-            tryPlayBgm();  // 展开后自动播放隐藏的背景音乐
+            // 展开后再尝试一次，确保自动播放生效
+            tryPlayBgm();
             setTimeout(function () {
                 content.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 500);
@@ -620,11 +669,7 @@ def build_html(photos, audios, config):
 
     function revealCards() {
         var photos = document.querySelectorAll('.photo-card');
-        var audios = document.querySelectorAll('.audio-card');
-        var all = [];
-        photos.forEach(function (el) { all.push(el); });
-        audios.forEach(function (el) { all.push(el); });
-        all.forEach(function (el, i) {
+        photos.forEach(function (el, i) {
             setTimeout(function () { el.classList.add('show'); }, i * 110);
         });
     }
@@ -688,7 +733,7 @@ def build_html(photos, audios, config):
 
     function initClickHeart() {
         document.addEventListener('click', function (e) {
-            if (e.target.closest('button, audio, .lightbox, .blow-btn, .cake-scene')) return;
+            if (e.target.closest('button, .lightbox, .blow-btn, .cake-scene, .bgm-float')) return;
             var heart = document.createElement('div');
             heart.className = 'pop-heart';
             heart.textContent = ['❤️', '💖', '💕', '✨'][Math.floor(Math.random() * 4)];
@@ -705,7 +750,7 @@ def build_html(photos, audios, config):
     function init() {
         initFloatingHearts();
         initClickHeart();
-        initBgmControl();
+        initBgm();
         document.getElementById('blowBtn').addEventListener('click', function (e) {
             e.stopPropagation();
             blowCandles();
@@ -737,10 +782,16 @@ def build_html(photos, audios, config):
 <body>
     <div class="floating-hearts" id="floatingHearts"></div>
 
-    <!-- 隐藏的背景音乐：页面上不显示任何标题和播放条 -->
+    <!-- 隐藏的背景音乐 -->
     <audio id="bgmAudio" loop preload="auto" style="display:none;">
         <source src="audio/玻璃.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- 背景音乐浮窗按钮 -->
+    <button class="bgm-float paused" id="bgmFloat" type="button" aria-label="播放或暂停背景音乐">
+        <span class="bgm-float-icon">🔇</span>
+        <span class="bgm-float-text">播放玻璃</span>
+    </button>
 
     <div class="page-wrap">
 
@@ -788,16 +839,11 @@ def build_html(photos, audios, config):
             </div>
         </section>
 
-        <!-- 内容区：吹蜡烛后展开 -->
+        <!-- 内容区：吹蜡烛后展开，只保留照片 -->
         <main class="content-section" id="contentSection">
             <h2 class="section-title">我们的照片</h2>
             <div class="gallery">
                 {photos_html}
-            </div>
-
-            <h2 class="section-title">想对你说的话</h2>
-            <div class="audio-list">
-                {audios_html}
             </div>
 
             <footer class="footer">
