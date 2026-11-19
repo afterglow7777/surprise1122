@@ -18,7 +18,8 @@ PUBLIC_URL = "https://afterglow7777.github.io/surprise1122/"
 CONFIG = {
     "title": "乖乖宝贝，生日快乐！",  # 页面标题
     "subtitle": "杨天戈23岁啦",  # 副标题
-    "wish_text": "我说有你在的每一天我都很开心，生日快乐，我的小朋友！",  # 祝福语
+    "wish_text": "我说有你在的每一天我都很开心!",
+    "wish_text2": "生日快乐，我的小朋友！",  # 祝福语
     "photos_dir": "photos",  # 照片文件夹
     "audio_dir": "audio",  # 语音文件夹
     "output_html": "birthday_surprise.html",  # 生成的HTML文件名
@@ -807,6 +808,7 @@ def build_html(photos, audios, config):
             <h1>{config['title']}</h1>
             <p class="subtitle">{config['subtitle']}</p>
             <div class="wish">💝 {config['wish_text']}</div>
+            <div class="wish">💝 {config['wish_text2']}</div>
         </header>
 
         <!-- 互动区：CSS 插画风蛋糕 -->
