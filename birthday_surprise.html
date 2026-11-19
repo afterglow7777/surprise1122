@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>乖乖宝贝，生日快乐！</title>
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+                     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: #3a2a33;
+        line-height: 1.6;
+        min-height: 100vh;
+        background: #fdf7fa;
+        background-image:
+            radial-gradient(circle at 15% 0%, #ffe3ee 0%, transparent 45%),
+            radial-gradient(circle at 85% 100%, #e9e2ff 0%, transparent 45%);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+    }
+
+    /* 漂浮爱心背景 */
+    .floating-hearts {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .floating-heart {
+        position: absolute; font-size: 1.4rem; opacity: 0;
+        animation: floatUp 12s ease-in infinite;
+        color: #ffb6c1; user-select: none;
+    }
+    @keyframes floatUp {
+        0% { transform: translateY(100vh) scale(0.6); opacity: 0; }
+        10% { opacity: 0.7; }
+        90% { opacity: 0.7; }
+        100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .page-wrap { position: relative; z-index: 1; }
+
+    /* ===== 英雄区（礼物盒 + 星星装饰，区别于蛋糕区） ===== */
+    .hero {
+        text-align: center; padding: 64px 24px 8px; position: relative;
+        transition: padding 0.6s ease;
+    }
+    .hero.compact { padding: 40px 24px 6px; }
+
+    .hero-deco {
+        position: relative;
+        display: inline-block;
+        width: 124px; height: 88px;
+        margin-bottom: 2px;
+    }
+    .gift-emoji {
+        position: absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 56px; line-height: 1;
+        animation: giftBounce 2.6s ease-in-out infinite;
+        filter: drop-shadow(0 8px 14px rgba(230, 100, 150, 0.28));
+        transition: font-size 0.6s ease;
+    }
+    .hero.compact .gift-emoji { font-size: 44px; }
+
+    @keyframes giftBounce {
+        0%, 100% { transform: translate(-50%, -50%) rotate(-4deg) scale(1); }
+        50% { transform: translate(-50%, -62%) rotate(4deg) scale(1.06); }
+    }
+
+    .spark {
+        position: absolute;
+        font-size: 15px;
+        opacity: 0.85;
+        animation: twinkle 2.2s ease-in-out infinite;
+        user-select: none;
+    }
+    .spark.s1 { left: 2px; top: 8px; animation-delay: 0s; }
+    .spark.s2 { right: 0px; top: 16px; animation-delay: 0.5s; }
+    .spark.s3 { left: 14px; bottom: 2px; animation-delay: 1s; }
+    .spark.s4 { right: 12px; bottom: 8px; animation-delay: 1.5s; }
+
+    @keyframes twinkle {
+        0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.35; }
+        50% { transform: scale(1.15) rotate(20deg); opacity: 0.95; }
+    }
+
+    .hero h1 {
+        font-size: clamp(1.8rem, 5.5vw, 3rem);
+        font-weight: 800; letter-spacing: 0.02em; margin: 10px 0 6px;
+        background: linear-gradient(135deg, #e75480, #b83b5e, #9b3a6a);
+        -webkit-background-clip: text; background-clip: text;
+        color: transparent; background-size: 200% 200%;
+        animation: gradientShift 4s ease infinite;
+    }
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .subtitle { color: #8a6a78; font-size: 1.05rem; letter-spacing: 0.04em; }
+
+    .wish {
+        display: inline-block; margin-top: 22px; padding: 12px 30px;
+        border-radius: 999px; color: #fff; font-size: 1rem; font-weight: 500;
+        background: linear-gradient(135deg, #f06d9a, #c94b7a);
+        box-shadow: 0 8px 22px rgba(201, 75, 122, 0.32);
+        position: relative; overflow: hidden;
+    }
+    .wish::after {
+        content: ''; position: absolute; top: -50%; left: -60%;
+        width: 40%; height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transform: rotate(25deg); animation: shimmer 3.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+        0%, 100% { left: -60%; }
+        50% { left: 120%; }
+    }
+
+    /* ===== 互动区：吹蜡烛 ===== */
+    .interact-section {
+        max-width: 720px; margin: 30px auto 0; padding: 0 20px;
+        transition: opacity 0.6s ease, transform 0.6s ease, margin 0.6s ease;
+    }
+    .interact-section.done {
+        opacity: 0.9;
+        transform: scale(0.98);
+    }
+
+    .cake-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border-radius: 30px; padding: 26px 24px 24px; text-align: center;
+        box-shadow: 0 14px 44px rgba(200, 80, 130, 0.16);
+        border: 1px solid rgba(255, 200, 220, 0.55);
+        position: relative; overflow: hidden;
+    }
+    .cake-card::before {
+        content: ''; position: absolute; top: -70px; left: 50%;
+        transform: translateX(-50%);
+        width: 260px; height: 140px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 214, 230, 0.75), transparent 70%);
+        pointer-events: none;
+    }
+
+    .cake-card h3 {
+        font-size: 1.12rem; color: #b04070; margin-bottom: 6px;
+        font-weight: 700; position: relative;
+    }
+    .cake-card .hint {
+        font-size: 0.85rem; color: #a88a96; margin-bottom: 16px; position: relative;
+    }
+
+    /* ===== CSS 插画风蛋糕 ===== */
+    .cake-scene {
+        position: relative;
+        width: 200px; height: 196px;
+        margin: 0 auto;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        transition: transform 0.2s ease;
+    }
+    .cake-scene:active { transform: scale(0.97); }
+
+    .plate {
+        position: absolute; left: 50%; bottom: 6px;
+        transform: translateX(-50%);
+        width: 168px; height: 20px; border-radius: 50%;
+        background: radial-gradient(ellipse at 50% 40%, #ffffff, #f3d9e4 70%, #e9c3d3);
+        box-shadow: 0 8px 18px rgba(190, 100, 140, 0.22);
+        z-index: 1;
+    }
+
+    .cake-layer {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        border-radius: 10px 10px 8px 8px;
+        z-index: 2;
+    }
+    .layer-bottom {
+        bottom: 18px; width: 148px; height: 46px;
+        background: linear-gradient(180deg, #f7b9d0, #e98cb2);
+        box-shadow: inset 0 -6px 0 rgba(180, 70, 120, 0.18);
+    }
+    .layer-top {
+        bottom: 62px; width: 120px; height: 36px;
+        background: linear-gradient(180deg, #ffd1e2, #f7a9c8);
+        box-shadow: inset 0 -5px 0 rgba(180, 70, 120, 0.14);
+    }
+
+    .cream {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        height: 16px; border-radius: 12px;
+        background: linear-gradient(180deg, #ffffff, #ffeaf2);
+        box-shadow: 0 2px 6px rgba(220, 150, 180, 0.25);
+        z-index: 3;
+    }
+    .cream.c1 { bottom: 58px; width: 150px; }
+    .cream.c2 { bottom: 94px; width: 122px; }
+
+    .cream-drip {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        width: 150px; height: 14px; bottom: 52px;
+        z-index: 4;
+        background:
+            radial-gradient(circle at 8px 0, #ffffff 7px, transparent 8px) 0 0/20px 14px repeat-x;
+    }
+
+    .berry {
+        position: absolute; width: 16px; height: 16px;
+        background: radial-gradient(circle at 35% 30%, #ff6b81, #d81b4a);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        box-shadow: 0 2px 5px rgba(190, 30, 70, 0.35);
+        z-index: 5;
+    }
+    .berry::after {
+        content: ''; position: absolute; top: -4px; left: 50%;
+        transform: translateX(-50%);
+        width: 8px; height: 6px; border-radius: 50% 50% 0 0;
+        background: #4caf50;
+    }
+    .berry.b1 { left: 30px; bottom: 96px; }
+    .berry.b2 { right: 30px; bottom: 96px; }
+    .berry.b3 { left: 62px; bottom: 60px; }
+    .berry.b4 { right: 62px; bottom: 60px; }
+
+    .candle {
+        position: absolute; left: 50%; bottom: 128px;
+        transform: translateX(-50%);
+        width: 14px; height: 36px; border-radius: 4px;
+        background: repeating-linear-gradient(
+            180deg,
+            #ff8fab 0 6px,
+            #ffffff 6px 12px
+        );
+        box-shadow: 0 2px 6px rgba(190, 80, 120, 0.25);
+        z-index: 6;
+    }
+    .candle::after {
+        content: ''; position: absolute; top: -5px; left: 50%;
+        transform: translateX(-50%);
+        width: 2px; height: 6px; background: #7a4a58; border-radius: 2px;
+    }
+
+    .candle-flame {
+        position: absolute; left: 50%; bottom: 164px;
+        transform: translateX(-50%);
+        width: 16px; height: 24px;
+        background: radial-gradient(circle at 50% 70%, #fff3b0 0%, #ffd54f 35%, #ff9800 70%, #ff5722 100%);
+        border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+        box-shadow: 0 0 18px 6px rgba(255, 170, 60, 0.45);
+        transform-origin: 50% 100%;
+        animation: flameFlicker 0.55s ease-in-out infinite alternate;
+        z-index: 7;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    @keyframes flameFlicker {
+        0% { transform: translateX(-50%) scale(1) rotate(-3deg); }
+        100% { transform: translateX(-50%) scale(1.1, 1.18) rotate(3deg); }
+    }
+    .candle-flame.out {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.3);
+        animation: none;
+    }
+
+    .flame-glow {
+        position: absolute; left: 50%; bottom: 150px;
+        transform: translateX(-50%);
+        width: 90px; height: 90px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 200, 90, 0.35), transparent 65%);
+        z-index: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    }
+    .flame-glow.out { opacity: 0; }
+
+    .smoke {
+        position: absolute; left: 50%; bottom: 168px;
+        transform: translateX(-50%);
+        font-size: 16px; opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none; z-index: 8;
+    }
+    .smoke.show { opacity: 0.75; animation: smokeRise 1.9s ease-out forwards; }
+    @keyframes smokeRise {
+        0% { transform: translateX(-50%) translateY(0) scale(0.8); opacity: 0.75; }
+        100% { transform: translateX(-50%) translateY(-52px) scale(1.7); opacity: 0; }
+    }
+
+    .blow-btn {
+        margin-top: 18px; display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 30px; border: none; border-radius: 999px;
+        font-size: 0.96rem; font-weight: 600; color: #fff;
+        background: linear-gradient(135deg, #ff7e9d, #e75480);
+        box-shadow: 0 8px 20px rgba(231, 84, 128, 0.38);
+        cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        -webkit-tap-highlight-color: transparent; font-family: inherit;
+        position: relative;
+    }
+    .blow-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(231, 84, 128, 0.48); }
+    .blow-btn:active { transform: scale(0.96); }
+    .blow-btn:disabled {
+        opacity: 0.55; cursor: default; transform: none;
+        box-shadow: 0 6px 18px rgba(231, 84, 128, 0.2);
+    }
+
+    .blessing-msg {
+        margin-top: 14px; font-size: 0.95rem; font-weight: 600;
+        color: #c94b7a; min-height: 1.4em; transition: opacity 0.4s ease;
+        position: relative;
+    }
+
+    /* ===== 内容区（吹蜡烛后显示） ===== */
+    .content-section {
+        max-width: 1080px; margin: 0 auto; padding: 0 20px;
+        max-height: 0; opacity: 0; overflow: hidden;
+        transform: translateY(60px);
+        transition: max-height 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+                    opacity 0.9s ease 0.15s,
+                    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+        pointer-events: none;
+    }
+    .content-section.open {
+        max-height: 12000px; opacity: 1; transform: none;
+        pointer-events: auto;
+    }
+
+    .section-title {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 1.25rem; font-weight: 700; margin: 48px 0 20px; color: #4a2f3c;
+    }
+    .section-title::before {
+        content: ''; width: 4px; height: 20px; border-radius: 2px;
+        background: linear-gradient(#e75480, #b83b5e);
+    }
+
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 18px;
+    }
+
+    .photo-card {
+        background: #fff; border-radius: 18px; overflow: hidden;
+        box-shadow: 0 6px 20px rgba(180, 60, 110, 0.08);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease,
+                    opacity 0.6s ease;
+        cursor: pointer; position: relative;
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+    }
+    .photo-card.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    .photo-card.show:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 16px 36px rgba(180, 60, 110, 0.22);
+    }
+
+    .photo-card img {
+        width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+        display: block; transition: transform 0.5s ease;
+    }
+    .photo-card.show:hover img { transform: scale(1.06); }
+
+    .caption {
+        padding: 10px 12px; font-size: 0.85rem; color: #7a5a68;
+        text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .audio-card {
+        background: #fff; border-radius: 18px; padding: 16px 18px; margin-bottom: 16px;
+        box-shadow: 0 6px 20px rgba(180, 60, 110, 0.08);
+        transition: box-shadow 0.3s ease, opacity 0.6s ease, transform 0.6s ease;
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    .audio-card.show {
+        opacity: 1;
+        transform: none;
+    }
+    .audio-card.show:hover { box-shadow: 0 10px 28px rgba(180, 60, 110, 0.14); }
+
+    .audio-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .audio-icon { font-size: 1.15rem; }
+    .audio-name { font-weight: 600; font-size: 0.95rem; color: #5a3a48; }
+    .audio-card audio { width: 100%; height: 40px; border-radius: 8px; }
+
+    .empty-tip {
+        text-align: center; padding: 30px; opacity: 0.5;
+        font-style: italic; font-size: 0.92rem;
+    }
+
+    /* ===== 页脚 ===== */
+    .footer {
+        text-align: center; padding: 60px 20px 44px;
+        color: #a88a96; font-size: 0.9rem;
+    }
+    .footer .heart {
+        color: #e75480; display: inline-block;
+        animation: heartBeat 1.4s ease-in-out infinite;
+    }
+    @keyframes heartBeat {
+        0%, 100% { transform: scale(1); }
+        15% { transform: scale(1.3); }
+        30% { transform: scale(1); }
+        45% { transform: scale(1.2); }
+    }
+
+    /* ===== 灯箱 ===== */
+    .lightbox {
+        display: none; position: fixed; inset: 0;
+        background: rgba(20, 10, 15, 0.92);
+        -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+        z-index: 9999; padding: 24px;
+        align-items: center; justify-content: center; cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+        max-width: 92vw; max-height: 88vh; border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: zoom 0.3s ease;
+    }
+    @keyframes zoom {
+        from { transform: scale(0.92); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    /* 撒花彩带 */
+    .confetti-piece {
+        position: fixed; width: 10px; height: 10px; z-index: 9998;
+        pointer-events: none; border-radius: 2px;
+        animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+        0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+    }
+
+    /* 点击爱心 */
+    .pop-heart {
+        position: fixed; pointer-events: none; z-index: 9998; font-size: 1.6rem;
+        animation: popHeart 0.9s ease-out forwards;
+    }
+    @keyframes popHeart {
+        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+        100% { transform: translate(-50%, -120%) scale(1.8); opacity: 0; }
+    }
+
+    @media (max-width: 560px) {
+        .hero { padding: 52px 20px 4px; }
+        .hero.compact { padding: 32px 20px 2px; }
+        .hero-deco { width: 108px; height: 78px; }
+        .gift-emoji { font-size: 48px; }
+        .hero.compact .gift-emoji { font-size: 38px; }
+        .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .caption { font-size: 0.75rem; padding: 8px 6px; }
+        .section-title { margin: 36px 0 16px; font-size: 1.15rem; }
+        .interact-section { margin-top: 24px; }
+        .cake-card { padding: 22px 16px 20px; }
+        .cake-scene { width: 176px; height: 172px; }
+        .plate { width: 150px; }
+        .layer-bottom { width: 132px; }
+        .layer-top { width: 108px; }
+        .cream.c1 { width: 134px; }
+        .cream.c2 { width: 110px; }
+        .cream-drip { width: 134px; }
+        .berry.b1 { left: 24px; }
+        .berry.b2 { right: 24px; }
+        .berry.b3 { left: 52px; }
+        .berry.b4 { right: 52px; }
+    }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <div class="page-wrap">
+
+        <!-- 英雄区：礼物盒 + 星星装饰（与蛋糕区区分） -->
+        <header class="hero" id="hero">
+            <div class="hero-deco">
+                <span class="spark s1">✨</span>
+                <span class="spark s2">⭐</span>
+                <span class="spark s3">💫</span>
+                <span class="spark s4">✨</span>
+                <span class="gift-emoji">🎁</span>
+            </div>
+            <h1>乖乖宝贝，生日快乐！</h1>
+            <p class="subtitle">杨天戈23岁啦</p>
+            <div class="wish">💝 我说有你在的每一天我都很开心，生日快乐，我的小朋友！</div>
+        </header>
+
+        <!-- 互动区：CSS 插画风蛋糕 -->
+        <section class="interact-section" id="interactSection">
+            <div class="cake-card">
+                <h3>🎈 许个愿吧</h3>
+                <p class="hint">点击蛋糕或按钮吹灭蜡烛～</p>
+                <div class="cake-scene" id="cakeScene" role="button" tabindex="0" aria-label="点击吹蜡烛">
+                    <div class="flame-glow" id="flameGlow"></div>
+                    <div class="plate"></div>
+                    <div class="cake-layer layer-bottom"></div>
+                    <div class="cake-layer layer-top"></div>
+                    <div class="cream c1"></div>
+                    <div class="cream c2"></div>
+                    <div class="cream-drip"></div>
+                    <div class="berry b1"></div>
+                    <div class="berry b2"></div>
+                    <div class="berry b3"></div>
+                    <div class="berry b4"></div>
+                    <div class="candle"></div>
+                    <div class="candle-flame" id="candleFlame"></div>
+                    <div class="smoke" id="smoke">💨</div>
+                </div>
+                <div>
+                    <button class="blow-btn" id="blowBtn" type="button">
+                        <span>💨</span> 吹蜡烛
+                    </button>
+                </div>
+                <p class="blessing-msg" id="blessingMsg"></p>
+            </div>
+        </section>
+
+        <!-- 内容区：吹蜡烛后展开 -->
+        <main class="content-section" id="contentSection">
+            <h2 class="section-title">我们的照片</h2>
+            <div class="gallery">
+                
+        <figure class="photo-card" data-src="photos/23：00出发接杨天戈.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/23：00出发接杨天戈.jpg" alt="23：00出发接杨天戈" loading="lazy">
+            <figcaption class="caption">23：00出发接杨天戈</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/✌.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/✌.jpg" alt="✌" loading="lazy">
+            <figcaption class="caption">✌</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/一天中的第一顿饭不管几点都是过早.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/一天中的第一顿饭不管几点都是过早.jpg" alt="一天中的第一顿饭不管几点都是过早" loading="lazy">
+            <figcaption class="caption">一天中的第一顿饭不管几点都是过早</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/一起去面包节~.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/一起去面包节~.jpg" alt="一起去面包节~" loading="lazy">
+            <figcaption class="caption">一起去面包节~</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/一起看电影~.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/一起看电影~.jpg" alt="一起看电影~" loading="lazy">
+            <figcaption class="caption">一起看电影~</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/与其说你美好，不如说你不可重复.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/与其说你美好，不如说你不可重复.jpg" alt="与其说你美好，不如说你不可重复" loading="lazy">
+            <figcaption class="caption">与其说你美好，不如说你不可重复</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/专车送我去上班.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/专车送我去上班.jpg" alt="专车送我去上班" loading="lazy">
+            <figcaption class="caption">专车送我去上班</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/乖乖这个真的夯爆了!.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/乖乖这个真的夯爆了!.jpg" alt="乖乖这个真的夯爆了!" loading="lazy">
+            <figcaption class="caption">乖乖这个真的夯爆了!</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/乖乖都没咋吃 纯陪我吃了 爱吃！.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/乖乖都没咋吃 纯陪我吃了 爱吃！.jpg" alt="乖乖都没咋吃 纯陪我吃了 爱吃！" loading="lazy">
+            <figcaption class="caption">乖乖都没咋吃 纯陪我吃了 爱吃！</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/也是当回大学生了.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/也是当回大学生了.jpg" alt="也是当回大学生了" loading="lazy">
+            <figcaption class="caption">也是当回大学生了</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/人生中第一次布置这些 好难.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/人生中第一次布置这些 好难.jpg" alt="人生中第一次布置这些 好难" loading="lazy">
+            <figcaption class="caption">人生中第一次布置这些 好难</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/你爱喝的我爱喝的你爱喝的我爱喝的.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/你爱喝的我爱喝的你爱喝的我爱喝的.jpg" alt="你爱喝的我爱喝的你爱喝的我爱喝的" loading="lazy">
+            <figcaption class="caption">你爱喝的我爱喝的你爱喝的我爱喝的</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/你看着我的眼睛，真的无感吗.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/你看着我的眼睛，真的无感吗.jpg" alt="你看着我的眼睛，真的无感吗" loading="lazy">
+            <figcaption class="caption">你看着我的眼睛，真的无感吗</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/你真可爱.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/你真可爱.jpg" alt="你真可爱" loading="lazy">
+            <figcaption class="caption">你真可爱</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/准备好吃的让乖乖回来就能动筷子.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/准备好吃的让乖乖回来就能动筷子.jpg" alt="准备好吃的让乖乖回来就能动筷子" loading="lazy">
+            <figcaption class="caption">准备好吃的让乖乖回来就能动筷子</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/呆呆.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/呆呆.jpg" alt="呆呆" loading="lazy">
+            <figcaption class="caption">呆呆</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/和乖乖吃好吃的大排档！.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/和乖乖吃好吃的大排档！.jpg" alt="和乖乖吃好吃的大排档！" loading="lazy">
+            <figcaption class="caption">和乖乖吃好吃的大排档！</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/和乖乖品鉴美食.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/和乖乖品鉴美食.jpg" alt="和乖乖品鉴美食" loading="lazy">
+            <figcaption class="caption">和乖乖品鉴美食</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/和乖乖在江边散步.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/和乖乖在江边散步.jpg" alt="和乖乖在江边散步" loading="lazy">
+            <figcaption class="caption">和乖乖在江边散步</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/啥也不干主打陪伴.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/啥也不干主打陪伴.jpg" alt="啥也不干主打陪伴" loading="lazy">
+            <figcaption class="caption">啥也不干主打陪伴</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/善用鸡肉的厨子.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/善用鸡肉的厨子.jpg" alt="善用鸡肉的厨子" loading="lazy">
+            <figcaption class="caption">善用鸡肉的厨子</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/喜欢吃这个.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/喜欢吃这个.jpg" alt="喜欢吃这个" loading="lazy">
+            <figcaption class="caption">喜欢吃这个</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/回来时我的世界因你充满了色彩.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/回来时我的世界因你充满了色彩.jpg" alt="回来时我的世界因你充满了色彩" loading="lazy">
+            <figcaption class="caption">回来时我的世界因你充满了色彩</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/因为你 我相信 爱存在.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/因为你 我相信 爱存在.jpg" alt="因为你 我相信 爱存在" loading="lazy">
+            <figcaption class="caption">因为你 我相信 爱存在</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/大厨 又辛苦啦.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/大厨 又辛苦啦.jpg" alt="大厨 又辛苦啦" loading="lazy">
+            <figcaption class="caption">大厨 又辛苦啦</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/大厨就是大厨.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/大厨就是大厨.jpg" alt="大厨就是大厨" loading="lazy">
+            <figcaption class="caption">大厨就是大厨</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/大狗和小狗.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/大狗和小狗.jpg" alt="大狗和小狗" loading="lazy">
+            <figcaption class="caption">大狗和小狗</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃 下次再去吃.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃 下次再去吃.jpg" alt="好吃 下次再去吃" loading="lazy">
+            <figcaption class="caption">好吃 下次再去吃</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃 会买.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃 会买.jpg" alt="好吃 会买" loading="lazy">
+            <figcaption class="caption">好吃 会买</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃.jpg" alt="好吃" loading="lazy">
+            <figcaption class="caption">好吃</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃昏了.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃昏了.jpg" alt="好吃昏了" loading="lazy">
+            <figcaption class="caption">好吃昏了</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃！.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃！.jpg" alt="好吃！" loading="lazy">
+            <figcaption class="caption">好吃！</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃！杨大厨出品.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃！杨大厨出品.jpg" alt="好吃！杨大厨出品" loading="lazy">
+            <figcaption class="caption">好吃！杨大厨出品</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃！桑拿鸡.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃！桑拿鸡.jpg" alt="好吃！桑拿鸡" loading="lazy">
+            <figcaption class="caption">好吃！桑拿鸡</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃！！.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃！！.jpg" alt="好吃！！" loading="lazy">
+            <figcaption class="caption">好吃！！</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好吃，和我吃.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好吃，和我吃.jpg" alt="好吃，和我吃" loading="lazy">
+            <figcaption class="caption">好吃，和我吃</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/好萌！这啥？不知道。买~.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/好萌！这啥？不知道。买~.jpg" alt="好萌！这啥？不知道。买~" loading="lazy">
+            <figcaption class="caption">好萌！这啥？不知道。买~</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/宇宙那么大 我只把肩膀借你靠一靠.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/宇宙那么大 我只把肩膀借你靠一靠.jpg" alt="宇宙那么大 我只把肩膀借你靠一靠" loading="lazy">
+            <figcaption class="caption">宇宙那么大 我只把肩膀借你靠一靠</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/宝宝~你看这个云好漂亮.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/宝宝~你看这个云好漂亮.jpg" alt="宝宝~你看这个云好漂亮" loading="lazy">
+            <figcaption class="caption">宝宝~你看这个云好漂亮</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/小孩面.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/小孩面.jpg" alt="小孩面" loading="lazy">
+            <figcaption class="caption">小孩面</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/山姆shopping.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/山姆shopping.jpg" alt="山姆shopping" loading="lazy">
+            <figcaption class="caption">山姆shopping</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/工作繁忙.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/工作繁忙.jpg" alt="工作繁忙" loading="lazy">
+            <figcaption class="caption">工作繁忙</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/左右开弓.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/左右开弓.jpg" alt="左右开弓" loading="lazy">
+            <figcaption class="caption">左右开弓</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/平平淡淡的幸福.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/平平淡淡的幸福.jpg" alt="平平淡淡的幸福" loading="lazy">
+            <figcaption class="caption">平平淡淡的幸福</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/幸福的秘诀是拥有苹果时只在意苹果.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/幸福的秘诀是拥有苹果时只在意苹果.jpg" alt="幸福的秘诀是拥有苹果时只在意苹果" loading="lazy">
+            <figcaption class="caption">幸福的秘诀是拥有苹果时只在意苹果</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/很香但是那天吃了一天面条子.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/很香但是那天吃了一天面条子.jpg" alt="很香但是那天吃了一天面条子" loading="lazy">
+            <figcaption class="caption">很香但是那天吃了一天面条子</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/我时常为这一刻感到幸福.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/我时常为这一刻感到幸福.jpg" alt="我时常为这一刻感到幸福" loading="lazy">
+            <figcaption class="caption">我时常为这一刻感到幸福</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/我爱喝果粒橙然后家里出现了一箱.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/我爱喝果粒橙然后家里出现了一箱.jpg" alt="我爱喝果粒橙然后家里出现了一箱" loading="lazy">
+            <figcaption class="caption">我爱喝果粒橙然后家里出现了一箱</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/我爱炒面.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/我爱炒面.jpg" alt="我爱炒面" loading="lazy">
+            <figcaption class="caption">我爱炒面</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/我的心向你倾斜了 你可以接住吗.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/我的心向你倾斜了 你可以接住吗.jpg" alt="我的心向你倾斜了 你可以接住吗" loading="lazy">
+            <figcaption class="caption">我的心向你倾斜了 你可以接住吗</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/我的首选和永远.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/我的首选和永远.jpg" alt="我的首选和永远" loading="lazy">
+            <figcaption class="caption">我的首选和永远</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/时常感到幸福.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/时常感到幸福.jpg" alt="时常感到幸福" loading="lazy">
+            <figcaption class="caption">时常感到幸福</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/欢乐谷万圣节鬼屋合辑.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/欢乐谷万圣节鬼屋合辑.jpg" alt="欢乐谷万圣节鬼屋合辑" loading="lazy">
+            <figcaption class="caption">欢乐谷万圣节鬼屋合辑</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/漂亮花花 我挑的更好看.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/漂亮花花 我挑的更好看.jpg" alt="漂亮花花 我挑的更好看" loading="lazy">
+            <figcaption class="caption">漂亮花花 我挑的更好看</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/热饭大厨也是大厨！.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/热饭大厨也是大厨！.jpg" alt="热饭大厨也是大厨！" loading="lazy">
+            <figcaption class="caption">热饭大厨也是大厨！</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/爱会垫垫脚 也会弯弯腰.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/爱会垫垫脚 也会弯弯腰.jpg" alt="爱会垫垫脚 也会弯弯腰" loading="lazy">
+            <figcaption class="caption">爱会垫垫脚 也会弯弯腰</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/爵士美味.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/爵士美味.jpg" alt="爵士美味" loading="lazy">
+            <figcaption class="caption">爵士美味</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/病患二位里面请.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/病患二位里面请.jpg" alt="病患二位里面请" loading="lazy">
+            <figcaption class="caption">病患二位里面请</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/真巧 要不咱俩好呢.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/真巧 要不咱俩好呢.jpg" alt="真巧 要不咱俩好呢" loading="lazy">
+            <figcaption class="caption">真巧 要不咱俩好呢</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/眼前人是心上人.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/眼前人是心上人.jpg" alt="眼前人是心上人" loading="lazy">
+            <figcaption class="caption">眼前人是心上人</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/第一次带男生去见我的朋友萌.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/第一次带男生去见我的朋友萌.jpg" alt="第一次带男生去见我的朋友萌" loading="lazy">
+            <figcaption class="caption">第一次带男生去见我的朋友萌</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/等不到你的每一秒都被拉的很长.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/等不到你的每一秒都被拉的很长.jpg" alt="等不到你的每一秒都被拉的很长" loading="lazy">
+            <figcaption class="caption">等不到你的每一秒都被拉的很长</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/美女接机出发gogogo.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/美女接机出发gogogo.jpg" alt="美女接机出发gogogo" loading="lazy">
+            <figcaption class="caption">美女接机出发gogogo</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/美女接机回程ing.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/美女接机回程ing.jpg" alt="美女接机回程ing" loading="lazy">
+            <figcaption class="caption">美女接机回程ing</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/美女接机等地铁ing.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/美女接机等地铁ing.jpg" alt="美女接机等地铁ing" loading="lazy">
+            <figcaption class="caption">美女接机等地铁ing</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/美女接机等待ing.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/美女接机等待ing.jpg" alt="美女接机等待ing" loading="lazy">
+            <figcaption class="caption">美女接机等待ing</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/谢谢这是我第一次端盆吃饭.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/谢谢这是我第一次端盆吃饭.jpg" alt="谢谢这是我第一次端盆吃饭" loading="lazy">
+            <figcaption class="caption">谢谢这是我第一次端盆吃饭</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/财大小吃街勾起了乖乖的回忆.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/财大小吃街勾起了乖乖的回忆.jpg" alt="财大小吃街勾起了乖乖的回忆" loading="lazy">
+            <figcaption class="caption">财大小吃街勾起了乖乖的回忆</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/达菲之家.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/达菲之家.jpg" alt="达菲之家" loading="lazy">
+            <figcaption class="caption">达菲之家</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/这店真的贼拉远.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/这店真的贼拉远.jpg" alt="这店真的贼拉远" loading="lazy">
+            <figcaption class="caption">这店真的贼拉远</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/这辈子第一次一餐炫四碗饭.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/这辈子第一次一餐炫四碗饭.jpg" alt="这辈子第一次一餐炫四碗饭" loading="lazy">
+            <figcaption class="caption">这辈子第一次一餐炫四碗饭</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/遇见即使上上签.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/遇见即使上上签.jpg" alt="遇见即使上上签" loading="lazy">
+            <figcaption class="caption">遇见即使上上签</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/邓布利多说爱是世界上最伟大的魔法.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/邓布利多说爱是世界上最伟大的魔法.jpg" alt="邓布利多说爱是世界上最伟大的魔法" loading="lazy">
+            <figcaption class="caption">邓布利多说爱是世界上最伟大的魔法</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/闪送蜂蜜水ing.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/闪送蜂蜜水ing.jpg" alt="闪送蜂蜜水ing" loading="lazy">
+            <figcaption class="caption">闪送蜂蜜水ing</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/香 巨香.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/香 巨香.jpg" alt="香 巨香" loading="lazy">
+            <figcaption class="caption">香 巨香</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/香喷喷.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/香喷喷.jpg" alt="香喷喷" loading="lazy">
+            <figcaption class="caption">香喷喷</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/骗子.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/骗子.jpg" alt="骗子" loading="lazy">
+            <figcaption class="caption">骗子</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/💍依旧主理人 理不发音.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/💍依旧主理人 理不发音.jpg" alt="💍依旧主理人 理不发音" loading="lazy">
+            <figcaption class="caption">💍依旧主理人 理不发音</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/💍想成为你众所周知的挚爱.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/💍想成为你众所周知的挚爱.jpg" alt="💍想成为你众所周知的挚爱" loading="lazy">
+            <figcaption class="caption">💍想成为你众所周知的挚爱</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/💍愿得一人心.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/💍愿得一人心.jpg" alt="💍愿得一人心" loading="lazy">
+            <figcaption class="caption">💍愿得一人心</figcaption>
+        </figure>
+        <figure class="photo-card" data-src="photos/💍谢谢你在世界的角落找到我.jpg" onclick="openLightbox(this.dataset.src)">
+            <img src="photos/💍谢谢你在世界的角落找到我.jpg" alt="💍谢谢你在世界的角落找到我" loading="lazy">
+            <figcaption class="caption">💍谢谢你在世界的角落找到我</figcaption>
+        </figure>
+            </div>
+
+            <h2 class="section-title">想对你说的话</h2>
+            <div class="audio-list">
+                <p class="empty-tip">暂无语音，请在 audio 文件夹中添加语音文件～</p>
+            </div>
+
+            <footer class="footer">
+                <p>涵涵<span class="heart">❤</span>杨天戈</p>
+                <p>生日快乐，我的宝贝</p>
+            </footer>
+        </main>
+
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="preview">
+    </div>
+
+    <script>
+    function openLightbox(src) {
+        var lb = document.getElementById('lightbox');
+        document.getElementById('lightbox-img').src = src;
+        lb.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    /* ===== 吹蜡烛互动（吹完后展开内容区） ===== */
+    var candleBlown = false;
+    function blowCandles() {
+        if (candleBlown) return;
+        candleBlown = true;
+
+        var flame = document.getElementById('candleFlame');
+        var smoke = document.getElementById('smoke');
+        var glow = document.getElementById('flameGlow');
+        var btn = document.getElementById('blowBtn');
+        var msg = document.getElementById('blessingMsg');
+        var hero = document.getElementById('hero');
+        var interact = document.getElementById('interactSection');
+        var content = document.getElementById('contentSection');
+
+        flame.classList.add('out');
+        glow.classList.add('out');
+        smoke.classList.add('show');
+        btn.disabled = true;
+        btn.innerHTML = '<span>🎉</span> 已许愿';
+        msg.textContent = '✨ 愿望已经许下啦，一定会实现的！✨';
+
+        spawnConfetti();
+        spawnHeartBurst();
+
+        hero.classList.add('compact');
+        interact.classList.add('done');
+
+        setTimeout(function () {
+            content.classList.add('open');
+            revealCards();
+            setTimeout(function () {
+                content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 500);
+        }, 900);
+    }
+
+    function revealCards() {
+        var photos = document.querySelectorAll('.photo-card');
+        var audios = document.querySelectorAll('.audio-card');
+        var all = [];
+        photos.forEach(function (el) { all.push(el); });
+        audios.forEach(function (el) { all.push(el); });
+        all.forEach(function (el, i) {
+            setTimeout(function () { el.classList.add('show'); }, i * 110);
+        });
+    }
+
+    function spawnConfetti() {
+        var colors = ['#e75480', '#ffb6c1', '#ffd700', '#c94b7a', '#b83b5e', '#f3b8cd', '#fff0f5', '#e9e2ff'];
+        for (var i = 0; i < 70; i++) {
+            var piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            var size = Math.random() * 8 + 6;
+            piece.style.width = size + 'px';
+            piece.style.height = size * (Math.random() * 0.6 + 0.6) + 'px';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.top = '-10vh';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            piece.style.animationDuration = (Math.random() * 1.8 + 1.8) + 's';
+            piece.style.animationDelay = (Math.random() * 0.6) + 's';
+            document.body.appendChild(piece);
+            setTimeout((function (el) {
+                return function () { el.remove(); };
+            })(piece), 5000);
+        }
+    }
+
+    function spawnHeartBurst() {
+        var emojis = ['❤️', '💖', '💕', '💗', '💝', '🌸', '✨', '🎉'];
+        var scene = document.getElementById('cakeScene');
+        var rect = scene.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+        for (var i = 0; i < 14; i++) {
+            var heart = document.createElement('div');
+            heart.className = 'pop-heart';
+            heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = (cx + (Math.random() - 0.5) * 160) + 'px';
+            heart.style.top = (cy + (Math.random() - 0.5) * 100) + 'px';
+            heart.style.fontSize = (Math.random() * 16 + 14) + 'px';
+            heart.style.animationDelay = (Math.random() * 0.3) + 's';
+            document.body.appendChild(heart);
+            setTimeout((function (el) {
+                return function () { el.remove(); };
+            })(heart), 1400);
+        }
+    }
+
+    function initFloatingHearts() {
+        var container = document.getElementById('floatingHearts');
+        var hearts = ['❤️', '💖', '💕', '💗', '🌸', '✨', '💝'];
+        for (var i = 0; i < 16; i++) {
+            var el = document.createElement('div');
+            el.className = 'floating-heart';
+            el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (Math.random() * 14 + 12) + 'px';
+            el.style.animationDuration = (Math.random() * 8 + 10) + 's';
+            el.style.animationDelay = (Math.random() * 10) + 's';
+            container.appendChild(el);
+        }
+    }
+
+    function initClickHeart() {
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('button, audio, .lightbox, .blow-btn, .cake-scene')) return;
+            var heart = document.createElement('div');
+            heart.className = 'pop-heart';
+            heart.textContent = ['❤️', '💖', '💕', '✨'][Math.floor(Math.random() * 4)];
+            heart.style.left = e.clientX + 'px';
+            heart.style.top = e.clientY + 'px';
+            heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
+            document.body.appendChild(heart);
+            setTimeout((function (el) {
+                return function () { el.remove(); };
+            })(heart), 1000);
+        });
+    }
+
+    function init() {
+        initFloatingHearts();
+        initClickHeart();
+        document.getElementById('blowBtn').addEventListener('click', function (e) {
+            e.stopPropagation();
+            blowCandles();
+        });
+        document.getElementById('cakeScene').addEventListener('click', function (e) {
+            e.stopPropagation();
+            blowCandles();
+        });
+        document.getElementById('cakeScene').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                blowCandles();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
