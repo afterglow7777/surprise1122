@@ -56,8 +56,9 @@ def get_files(folder, exts):
 
 def build_html(photos, audios, config):
     """生成HTML页面内容（美化版 + 互动版：吹蜡烛后展开照片/语音）
-    背景音乐《玻璃》放在「我们的照片」标题上方，吹蜡烛展开后自动播放，
-    点开语音时自动暂停背景音乐。媒体文件使用相对路径引用。"""
+    背景音乐《玻璃》使用隐藏 audio 元素，不在页面上显示任何标题或播放条；
+    吹蜡烛展开后自动播放，点开语音时自动暂停。
+    媒体文件使用相对路径引用。"""
 
     # ---- 照片卡片 ----
     photo_cards = []
@@ -378,38 +379,6 @@ def build_html(photos, audios, config):
         max-height: 12000px; opacity: 1; transform: none; pointer-events: auto;
     }
 
-    /* ===== 背景音乐条（照片标题上方） ===== */
-    .bgm-bar {
-        margin: 0 auto 8px; max-width: 560px;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border-radius: 18px; padding: 12px 18px;
-        box-shadow: 0 6px 22px rgba(200, 100, 140, 0.12);
-        display: flex; align-items: center; gap: 12px;
-        border: 1px solid rgba(255, 200, 220, 0.6);
-    }
-    .bgm-icon {
-        font-size: 1.3rem; flex-shrink: 0;
-        animation: noteSpin 3.2s linear infinite;
-        display: inline-block;
-    }
-    @keyframes noteSpin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    .bgm-body { flex: 1; min-width: 0; }
-    .bgm-title {
-        font-size: 0.88rem; font-weight: 600; color: #b04070;
-        margin-bottom: 4px; white-space: nowrap; overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .bgm-body audio { width: 100%; height: 34px; }
-    .bgm-tip {
-        font-size: 0.75rem; color: #a88a96; margin-top: 4px;
-        display: none;
-    }
-    .bgm-tip.show { display: block; }
-
     .section-title {
         display: flex; align-items: center; gap: 10px;
         font-size: 1.25rem; font-weight: 700; margin: 48px 0 20px; color: #4a2f3c;
@@ -558,8 +527,6 @@ def build_html(photos, audios, config):
         .berry.b3 { left: 52px; }
         .berry.b4 { right: 52px; }
         .lightbox-name { font-size: 0.82rem; }
-        .bgm-bar { padding: 10px 14px; gap: 10px; }
-        .bgm-icon { font-size: 1.1rem; }
     }
     """
 
@@ -580,18 +547,20 @@ def build_html(photos, audios, config):
         if (e.key === 'Escape') closeLightbox();
     });
 
-    /* ===== 背景音乐与语音互斥 ===== */
+    /* ===== 隐藏的背景音乐控制（不显示任何 UI） ===== */
     function initBgmControl() {
         var bgm = document.getElementById('bgmAudio');
         if (!bgm) return;
         var voices = document.querySelectorAll('.voice-audio');
 
+        // 任意语音开始播放时，暂停背景音乐
         voices.forEach(function (v) {
             v.addEventListener('play', function () {
                 if (!bgm.paused) bgm.pause();
             });
         });
 
+        // 背景音乐开始播放时，暂停所有语音
         bgm.addEventListener('play', function () {
             voices.forEach(function (v) {
                 if (!v.paused) v.pause();
@@ -599,15 +568,14 @@ def build_html(photos, audios, config):
         });
     }
 
-    /* 尝试自动播放背景音乐；被浏览器拦截时显示手动提示 */
+    /* 吹蜡烛后尝试自动播放隐藏的背景音乐 */
     function tryPlayBgm() {
         var bgm = document.getElementById('bgmAudio');
-        var tip = document.getElementById('bgmTip');
         if (!bgm) return;
         var p = bgm.play();
         if (p && p.catch) {
             p.catch(function () {
-                if (tip) tip.classList.add('show');
+                // 被浏览器拦截时静默失败，页面上没有任何提示
             });
         }
     }
@@ -643,7 +611,7 @@ def build_html(photos, audios, config):
         setTimeout(function () {
             content.classList.add('open');
             revealCards();
-            tryPlayBgm();  // 展开后自动播放背景音乐
+            tryPlayBgm();  // 展开后自动播放隐藏的背景音乐
             setTimeout(function () {
                 content.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 500);
@@ -769,9 +737,14 @@ def build_html(photos, audios, config):
 <body>
     <div class="floating-hearts" id="floatingHearts"></div>
 
+    <!-- 隐藏的背景音乐：页面上不显示任何标题和播放条 -->
+    <audio id="bgmAudio" loop preload="auto" style="display:none;">
+        <source src="audio/玻璃.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="page-wrap">
 
-        <!-- 英雄区：礼物盒 + 星星装饰 -->
+        <!-- 英雄区 -->
         <header class="hero" id="hero">
             <div class="hero-deco">
                 <span class="spark s1">✨</span>
@@ -817,19 +790,6 @@ def build_html(photos, audios, config):
 
         <!-- 内容区：吹蜡烛后展开 -->
         <main class="content-section" id="contentSection">
-
-            <!-- 背景音乐：放在「我们的照片」标题上方 -->
-            <div class="bgm-bar" id="bgmBar">
-                <span class="bgm-icon">🎵</span>
-                <div class="bgm-body">
-                    <div class="bgm-title">玻璃</div>
-                    <audio id="bgmAudio" loop preload="auto">
-                        <source src="audio/玻璃.mp3" type="audio/mpeg">
-                    </audio>
-                    <div class="bgm-tip" id="bgmTip">点击播放器即可开始播放背景音乐 🎧</div>
-                </div>
-            </div>
-
             <h2 class="section-title">我们的照片</h2>
             <div class="gallery">
                 {photos_html}
