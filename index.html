@@ -40,7 +40,7 @@
 
     .page-wrap { position: relative; z-index: 1; }
 
-    /* ===== 英雄区（礼物盒 + 星星装饰，区别于蛋糕区） ===== */
+    /* ===== 英雄区（礼物盒 + 星星装饰） ===== */
     .hero {
         text-align: center; padding: 64px 24px 8px; position: relative;
         transition: padding 0.6s ease;
@@ -366,9 +366,17 @@
     }
     .photo-card.show:hover img { transform: scale(1.06); }
 
+    /* 方案一：两行显示，超出省略号 */
     .caption {
         padding: 10px 12px; font-size: 0.85rem; color: #7a5a68;
-        text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.35;
+        word-break: break-all;
+        min-height: calc(0.85rem * 1.35 * 2 + 20px);
     }
 
     .audio-card {
@@ -410,7 +418,7 @@
         45% { transform: scale(1.2); }
     }
 
-    /* ===== 灯箱 ===== */
+    /* ===== 灯箱（方案三：底部显示完整名） ===== */
     .lightbox {
         display: none; position: fixed; inset: 0;
         background: rgba(20, 10, 15, 0.92);
@@ -419,10 +427,19 @@
         align-items: center; justify-content: center; cursor: zoom-out;
     }
     .lightbox.active { display: flex; }
+    .lightbox-inner {
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+        max-width: 92vw; max-height: 92vh;
+    }
     .lightbox img {
-        max-width: 92vw; max-height: 88vh; border-radius: 12px;
+        max-width: 92vw; max-height: 78vh; border-radius: 12px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         animation: zoom 0.3s ease;
+    }
+    .lightbox-name {
+        color: #fff; font-size: 0.92rem; text-align: center;
+        max-width: 90vw; word-break: break-all; opacity: 0.9;
+        line-height: 1.4;
     }
     @keyframes zoom {
         from { transform: scale(0.92); opacity: 0; }
@@ -472,6 +489,7 @@
         .berry.b2 { right: 24px; }
         .berry.b3 { left: 52px; }
         .berry.b4 { right: 52px; }
+        .lightbox-name { font-size: 0.82rem; }
     }
     </style>
 </head>
@@ -480,7 +498,7 @@
 
     <div class="page-wrap">
 
-        <!-- 英雄区：礼物盒 + 星星装饰（与蛋糕区区分） -->
+        <!-- 英雄区：礼物盒 + 星星装饰 -->
         <header class="hero" id="hero">
             <div class="hero-deco">
                 <span class="spark s1">✨</span>
@@ -529,327 +547,327 @@
             <h2 class="section-title">我们的照片</h2>
             <div class="gallery">
                 
-        <figure class="photo-card" data-src="photos/23：00出发接杨天戈.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/23：00出发接杨天戈.jpg" data-name="23：00出发接杨天戈" title="23：00出发接杨天戈" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/23：00出发接杨天戈.jpg" alt="23：00出发接杨天戈" loading="lazy">
             <figcaption class="caption">23：00出发接杨天戈</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/✌.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/✌.jpg" data-name="✌" title="✌" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/✌.jpg" alt="✌" loading="lazy">
             <figcaption class="caption">✌</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/一天中的第一顿饭不管几点都是过早.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/一天中的第一顿饭不管几点都是过早.jpg" data-name="一天中的第一顿饭不管几点都是过早" title="一天中的第一顿饭不管几点都是过早" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/一天中的第一顿饭不管几点都是过早.jpg" alt="一天中的第一顿饭不管几点都是过早" loading="lazy">
             <figcaption class="caption">一天中的第一顿饭不管几点都是过早</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/一起去面包节~.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/一起去面包节~.jpg" data-name="一起去面包节~" title="一起去面包节~" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/一起去面包节~.jpg" alt="一起去面包节~" loading="lazy">
             <figcaption class="caption">一起去面包节~</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/一起看电影~.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/一起看电影~.jpg" data-name="一起看电影~" title="一起看电影~" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/一起看电影~.jpg" alt="一起看电影~" loading="lazy">
             <figcaption class="caption">一起看电影~</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/与其说你美好，不如说你不可重复.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/与其说你美好，不如说你不可重复.jpg" data-name="与其说你美好，不如说你不可重复" title="与其说你美好，不如说你不可重复" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/与其说你美好，不如说你不可重复.jpg" alt="与其说你美好，不如说你不可重复" loading="lazy">
             <figcaption class="caption">与其说你美好，不如说你不可重复</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/专车送我去上班.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/专车送我去上班.jpg" data-name="专车送我去上班" title="专车送我去上班" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/专车送我去上班.jpg" alt="专车送我去上班" loading="lazy">
             <figcaption class="caption">专车送我去上班</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/乖乖这个真的夯爆了!.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/乖乖这个真的夯爆了!.jpg" data-name="乖乖这个真的夯爆了!" title="乖乖这个真的夯爆了!" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/乖乖这个真的夯爆了!.jpg" alt="乖乖这个真的夯爆了!" loading="lazy">
             <figcaption class="caption">乖乖这个真的夯爆了!</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/乖乖都没咋吃 纯陪我吃了 爱吃！.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/乖乖都没咋吃 纯陪我吃了 爱吃！.jpg" data-name="乖乖都没咋吃 纯陪我吃了 爱吃！" title="乖乖都没咋吃 纯陪我吃了 爱吃！" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/乖乖都没咋吃 纯陪我吃了 爱吃！.jpg" alt="乖乖都没咋吃 纯陪我吃了 爱吃！" loading="lazy">
             <figcaption class="caption">乖乖都没咋吃 纯陪我吃了 爱吃！</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/也是当回大学生了.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/也是当回大学生了.jpg" data-name="也是当回大学生了" title="也是当回大学生了" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/也是当回大学生了.jpg" alt="也是当回大学生了" loading="lazy">
             <figcaption class="caption">也是当回大学生了</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/人生中第一次布置这些 好难.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/人生中第一次布置这些 好难.jpg" data-name="人生中第一次布置这些 好难" title="人生中第一次布置这些 好难" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/人生中第一次布置这些 好难.jpg" alt="人生中第一次布置这些 好难" loading="lazy">
             <figcaption class="caption">人生中第一次布置这些 好难</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/你爱喝的我爱喝的你爱喝的我爱喝的.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/你爱喝的我爱喝的你爱喝的我爱喝的.jpg" data-name="你爱喝的我爱喝的你爱喝的我爱喝的" title="你爱喝的我爱喝的你爱喝的我爱喝的" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/你爱喝的我爱喝的你爱喝的我爱喝的.jpg" alt="你爱喝的我爱喝的你爱喝的我爱喝的" loading="lazy">
             <figcaption class="caption">你爱喝的我爱喝的你爱喝的我爱喝的</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/你看着我的眼睛，真的无感吗.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/你看着我的眼睛，真的无感吗.jpg" data-name="你看着我的眼睛，真的无感吗" title="你看着我的眼睛，真的无感吗" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/你看着我的眼睛，真的无感吗.jpg" alt="你看着我的眼睛，真的无感吗" loading="lazy">
             <figcaption class="caption">你看着我的眼睛，真的无感吗</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/你真可爱.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/你真可爱.jpg" data-name="你真可爱" title="你真可爱" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/你真可爱.jpg" alt="你真可爱" loading="lazy">
             <figcaption class="caption">你真可爱</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/准备好吃的让乖乖回来就能动筷子.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/准备好吃的让乖乖回来就能动筷子.jpg" data-name="准备好吃的让乖乖回来就能动筷子" title="准备好吃的让乖乖回来就能动筷子" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/准备好吃的让乖乖回来就能动筷子.jpg" alt="准备好吃的让乖乖回来就能动筷子" loading="lazy">
             <figcaption class="caption">准备好吃的让乖乖回来就能动筷子</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/呆呆.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/呆呆.jpg" data-name="呆呆" title="呆呆" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/呆呆.jpg" alt="呆呆" loading="lazy">
             <figcaption class="caption">呆呆</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/和乖乖吃好吃的大排档！.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/和乖乖吃好吃的大排档！.jpg" data-name="和乖乖吃好吃的大排档！" title="和乖乖吃好吃的大排档！" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/和乖乖吃好吃的大排档！.jpg" alt="和乖乖吃好吃的大排档！" loading="lazy">
             <figcaption class="caption">和乖乖吃好吃的大排档！</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/和乖乖品鉴美食.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/和乖乖品鉴美食.jpg" data-name="和乖乖品鉴美食" title="和乖乖品鉴美食" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/和乖乖品鉴美食.jpg" alt="和乖乖品鉴美食" loading="lazy">
             <figcaption class="caption">和乖乖品鉴美食</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/和乖乖在江边散步.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/和乖乖在江边散步.jpg" data-name="和乖乖在江边散步" title="和乖乖在江边散步" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/和乖乖在江边散步.jpg" alt="和乖乖在江边散步" loading="lazy">
             <figcaption class="caption">和乖乖在江边散步</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/啥也不干主打陪伴.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/啥也不干主打陪伴.jpg" data-name="啥也不干主打陪伴" title="啥也不干主打陪伴" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/啥也不干主打陪伴.jpg" alt="啥也不干主打陪伴" loading="lazy">
             <figcaption class="caption">啥也不干主打陪伴</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/善用鸡肉的厨子.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/善用鸡肉的厨子.jpg" data-name="善用鸡肉的厨子" title="善用鸡肉的厨子" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/善用鸡肉的厨子.jpg" alt="善用鸡肉的厨子" loading="lazy">
             <figcaption class="caption">善用鸡肉的厨子</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/喜欢吃这个.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/喜欢吃这个.jpg" data-name="喜欢吃这个" title="喜欢吃这个" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/喜欢吃这个.jpg" alt="喜欢吃这个" loading="lazy">
             <figcaption class="caption">喜欢吃这个</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/回来时我的世界因你充满了色彩.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/回来时我的世界因你充满了色彩.jpg" data-name="回来时我的世界因你充满了色彩" title="回来时我的世界因你充满了色彩" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/回来时我的世界因你充满了色彩.jpg" alt="回来时我的世界因你充满了色彩" loading="lazy">
             <figcaption class="caption">回来时我的世界因你充满了色彩</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/因为你 我相信 爱存在.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/因为你 我相信 爱存在.jpg" data-name="因为你 我相信 爱存在" title="因为你 我相信 爱存在" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/因为你 我相信 爱存在.jpg" alt="因为你 我相信 爱存在" loading="lazy">
             <figcaption class="caption">因为你 我相信 爱存在</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/大厨 又辛苦啦.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/大厨 又辛苦啦.jpg" data-name="大厨 又辛苦啦" title="大厨 又辛苦啦" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/大厨 又辛苦啦.jpg" alt="大厨 又辛苦啦" loading="lazy">
             <figcaption class="caption">大厨 又辛苦啦</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/大厨就是大厨.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/大厨就是大厨.jpg" data-name="大厨就是大厨" title="大厨就是大厨" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/大厨就是大厨.jpg" alt="大厨就是大厨" loading="lazy">
             <figcaption class="caption">大厨就是大厨</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/大狗和小狗.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/大狗和小狗.jpg" data-name="大狗和小狗" title="大狗和小狗" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/大狗和小狗.jpg" alt="大狗和小狗" loading="lazy">
             <figcaption class="caption">大狗和小狗</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃 下次再去吃.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃 下次再去吃.jpg" data-name="好吃 下次再去吃" title="好吃 下次再去吃" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃 下次再去吃.jpg" alt="好吃 下次再去吃" loading="lazy">
             <figcaption class="caption">好吃 下次再去吃</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃 会买.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃 会买.jpg" data-name="好吃 会买" title="好吃 会买" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃 会买.jpg" alt="好吃 会买" loading="lazy">
             <figcaption class="caption">好吃 会买</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃.jpg" data-name="好吃" title="好吃" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃.jpg" alt="好吃" loading="lazy">
             <figcaption class="caption">好吃</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃昏了.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃昏了.jpg" data-name="好吃昏了" title="好吃昏了" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃昏了.jpg" alt="好吃昏了" loading="lazy">
             <figcaption class="caption">好吃昏了</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃！.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃！.jpg" data-name="好吃！" title="好吃！" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃！.jpg" alt="好吃！" loading="lazy">
             <figcaption class="caption">好吃！</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃！杨大厨出品.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃！杨大厨出品.jpg" data-name="好吃！杨大厨出品" title="好吃！杨大厨出品" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃！杨大厨出品.jpg" alt="好吃！杨大厨出品" loading="lazy">
             <figcaption class="caption">好吃！杨大厨出品</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃！桑拿鸡.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃！桑拿鸡.jpg" data-name="好吃！桑拿鸡" title="好吃！桑拿鸡" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃！桑拿鸡.jpg" alt="好吃！桑拿鸡" loading="lazy">
             <figcaption class="caption">好吃！桑拿鸡</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃！！.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃！！.jpg" data-name="好吃！！" title="好吃！！" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃！！.jpg" alt="好吃！！" loading="lazy">
             <figcaption class="caption">好吃！！</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好吃，和我吃.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好吃，和我吃.jpg" data-name="好吃，和我吃" title="好吃，和我吃" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好吃，和我吃.jpg" alt="好吃，和我吃" loading="lazy">
             <figcaption class="caption">好吃，和我吃</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/好萌！这啥？不知道。买~.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/好萌！这啥？不知道。买~.jpg" data-name="好萌！这啥？不知道。买~" title="好萌！这啥？不知道。买~" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/好萌！这啥？不知道。买~.jpg" alt="好萌！这啥？不知道。买~" loading="lazy">
             <figcaption class="caption">好萌！这啥？不知道。买~</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/宇宙那么大 我只把肩膀借你靠一靠.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/宇宙那么大 我只把肩膀借你靠一靠.jpg" data-name="宇宙那么大 我只把肩膀借你靠一靠" title="宇宙那么大 我只把肩膀借你靠一靠" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/宇宙那么大 我只把肩膀借你靠一靠.jpg" alt="宇宙那么大 我只把肩膀借你靠一靠" loading="lazy">
             <figcaption class="caption">宇宙那么大 我只把肩膀借你靠一靠</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/宝宝~你看这个云好漂亮.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/宝宝~你看这个云好漂亮.jpg" data-name="宝宝~你看这个云好漂亮" title="宝宝~你看这个云好漂亮" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/宝宝~你看这个云好漂亮.jpg" alt="宝宝~你看这个云好漂亮" loading="lazy">
             <figcaption class="caption">宝宝~你看这个云好漂亮</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/小孩面.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/小孩面.jpg" data-name="小孩面" title="小孩面" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/小孩面.jpg" alt="小孩面" loading="lazy">
             <figcaption class="caption">小孩面</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/山姆shopping.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/山姆shopping.jpg" data-name="山姆shopping" title="山姆shopping" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/山姆shopping.jpg" alt="山姆shopping" loading="lazy">
             <figcaption class="caption">山姆shopping</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/工作繁忙.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/工作繁忙.jpg" data-name="工作繁忙" title="工作繁忙" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/工作繁忙.jpg" alt="工作繁忙" loading="lazy">
             <figcaption class="caption">工作繁忙</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/左右开弓.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/左右开弓.jpg" data-name="左右开弓" title="左右开弓" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/左右开弓.jpg" alt="左右开弓" loading="lazy">
             <figcaption class="caption">左右开弓</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/平平淡淡的幸福.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/平平淡淡的幸福.jpg" data-name="平平淡淡的幸福" title="平平淡淡的幸福" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/平平淡淡的幸福.jpg" alt="平平淡淡的幸福" loading="lazy">
             <figcaption class="caption">平平淡淡的幸福</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/幸福的秘诀是拥有苹果时只在意苹果.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/幸福的秘诀是拥有苹果时只在意苹果.jpg" data-name="幸福的秘诀是拥有苹果时只在意苹果" title="幸福的秘诀是拥有苹果时只在意苹果" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/幸福的秘诀是拥有苹果时只在意苹果.jpg" alt="幸福的秘诀是拥有苹果时只在意苹果" loading="lazy">
             <figcaption class="caption">幸福的秘诀是拥有苹果时只在意苹果</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/很香但是那天吃了一天面条子.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/很香但是那天吃了一天面条子.jpg" data-name="很香但是那天吃了一天面条子" title="很香但是那天吃了一天面条子" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/很香但是那天吃了一天面条子.jpg" alt="很香但是那天吃了一天面条子" loading="lazy">
             <figcaption class="caption">很香但是那天吃了一天面条子</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/我时常为这一刻感到幸福.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/我时常为这一刻感到幸福.jpg" data-name="我时常为这一刻感到幸福" title="我时常为这一刻感到幸福" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/我时常为这一刻感到幸福.jpg" alt="我时常为这一刻感到幸福" loading="lazy">
             <figcaption class="caption">我时常为这一刻感到幸福</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/我爱喝果粒橙然后家里出现了一箱.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/我爱喝果粒橙然后家里出现了一箱.jpg" data-name="我爱喝果粒橙然后家里出现了一箱" title="我爱喝果粒橙然后家里出现了一箱" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/我爱喝果粒橙然后家里出现了一箱.jpg" alt="我爱喝果粒橙然后家里出现了一箱" loading="lazy">
             <figcaption class="caption">我爱喝果粒橙然后家里出现了一箱</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/我爱炒面.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/我爱炒面.jpg" data-name="我爱炒面" title="我爱炒面" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/我爱炒面.jpg" alt="我爱炒面" loading="lazy">
             <figcaption class="caption">我爱炒面</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/我的心向你倾斜了 你可以接住吗.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/我的心向你倾斜了 你可以接住吗.jpg" data-name="我的心向你倾斜了 你可以接住吗" title="我的心向你倾斜了 你可以接住吗" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/我的心向你倾斜了 你可以接住吗.jpg" alt="我的心向你倾斜了 你可以接住吗" loading="lazy">
             <figcaption class="caption">我的心向你倾斜了 你可以接住吗</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/我的首选和永远.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/我的首选和永远.jpg" data-name="我的首选和永远" title="我的首选和永远" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/我的首选和永远.jpg" alt="我的首选和永远" loading="lazy">
             <figcaption class="caption">我的首选和永远</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/时常感到幸福.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/时常感到幸福.jpg" data-name="时常感到幸福" title="时常感到幸福" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/时常感到幸福.jpg" alt="时常感到幸福" loading="lazy">
             <figcaption class="caption">时常感到幸福</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/欢乐谷万圣节鬼屋合辑.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/欢乐谷万圣节鬼屋合辑.jpg" data-name="欢乐谷万圣节鬼屋合辑" title="欢乐谷万圣节鬼屋合辑" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/欢乐谷万圣节鬼屋合辑.jpg" alt="欢乐谷万圣节鬼屋合辑" loading="lazy">
             <figcaption class="caption">欢乐谷万圣节鬼屋合辑</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/漂亮花花 我挑的更好看.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/漂亮花花 我挑的更好看.jpg" data-name="漂亮花花 我挑的更好看" title="漂亮花花 我挑的更好看" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/漂亮花花 我挑的更好看.jpg" alt="漂亮花花 我挑的更好看" loading="lazy">
             <figcaption class="caption">漂亮花花 我挑的更好看</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/热饭大厨也是大厨！.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/热饭大厨也是大厨！.jpg" data-name="热饭大厨也是大厨！" title="热饭大厨也是大厨！" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/热饭大厨也是大厨！.jpg" alt="热饭大厨也是大厨！" loading="lazy">
             <figcaption class="caption">热饭大厨也是大厨！</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/爱会垫垫脚 也会弯弯腰.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/爱会垫垫脚 也会弯弯腰.jpg" data-name="爱会垫垫脚 也会弯弯腰" title="爱会垫垫脚 也会弯弯腰" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/爱会垫垫脚 也会弯弯腰.jpg" alt="爱会垫垫脚 也会弯弯腰" loading="lazy">
             <figcaption class="caption">爱会垫垫脚 也会弯弯腰</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/爵士美味.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/爵士美味.jpg" data-name="爵士美味" title="爵士美味" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/爵士美味.jpg" alt="爵士美味" loading="lazy">
             <figcaption class="caption">爵士美味</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/病患二位里面请.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/病患二位里面请.jpg" data-name="病患二位里面请" title="病患二位里面请" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/病患二位里面请.jpg" alt="病患二位里面请" loading="lazy">
             <figcaption class="caption">病患二位里面请</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/真巧 要不咱俩好呢.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/真巧 要不咱俩好呢.jpg" data-name="真巧 要不咱俩好呢" title="真巧 要不咱俩好呢" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/真巧 要不咱俩好呢.jpg" alt="真巧 要不咱俩好呢" loading="lazy">
             <figcaption class="caption">真巧 要不咱俩好呢</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/眼前人是心上人.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/眼前人是心上人.jpg" data-name="眼前人是心上人" title="眼前人是心上人" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/眼前人是心上人.jpg" alt="眼前人是心上人" loading="lazy">
             <figcaption class="caption">眼前人是心上人</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/第一次带男生去见我的朋友萌.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/第一次带男生去见我的朋友萌.jpg" data-name="第一次带男生去见我的朋友萌" title="第一次带男生去见我的朋友萌" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/第一次带男生去见我的朋友萌.jpg" alt="第一次带男生去见我的朋友萌" loading="lazy">
             <figcaption class="caption">第一次带男生去见我的朋友萌</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/等不到你的每一秒都被拉的很长.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/等不到你的每一秒都被拉的很长.jpg" data-name="等不到你的每一秒都被拉的很长" title="等不到你的每一秒都被拉的很长" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/等不到你的每一秒都被拉的很长.jpg" alt="等不到你的每一秒都被拉的很长" loading="lazy">
             <figcaption class="caption">等不到你的每一秒都被拉的很长</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/美女接机出发gogogo.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/美女接机出发gogogo.jpg" data-name="美女接机出发gogogo" title="美女接机出发gogogo" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/美女接机出发gogogo.jpg" alt="美女接机出发gogogo" loading="lazy">
             <figcaption class="caption">美女接机出发gogogo</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/美女接机回程ing.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/美女接机回程ing.jpg" data-name="美女接机回程ing" title="美女接机回程ing" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/美女接机回程ing.jpg" alt="美女接机回程ing" loading="lazy">
             <figcaption class="caption">美女接机回程ing</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/美女接机等地铁ing.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/美女接机等地铁ing.jpg" data-name="美女接机等地铁ing" title="美女接机等地铁ing" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/美女接机等地铁ing.jpg" alt="美女接机等地铁ing" loading="lazy">
             <figcaption class="caption">美女接机等地铁ing</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/美女接机等待ing.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/美女接机等待ing.jpg" data-name="美女接机等待ing" title="美女接机等待ing" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/美女接机等待ing.jpg" alt="美女接机等待ing" loading="lazy">
             <figcaption class="caption">美女接机等待ing</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/谢谢这是我第一次端盆吃饭.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/谢谢这是我第一次端盆吃饭.jpg" data-name="谢谢这是我第一次端盆吃饭" title="谢谢这是我第一次端盆吃饭" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/谢谢这是我第一次端盆吃饭.jpg" alt="谢谢这是我第一次端盆吃饭" loading="lazy">
             <figcaption class="caption">谢谢这是我第一次端盆吃饭</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/财大小吃街勾起了乖乖的回忆.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/财大小吃街勾起了乖乖的回忆.jpg" data-name="财大小吃街勾起了乖乖的回忆" title="财大小吃街勾起了乖乖的回忆" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/财大小吃街勾起了乖乖的回忆.jpg" alt="财大小吃街勾起了乖乖的回忆" loading="lazy">
             <figcaption class="caption">财大小吃街勾起了乖乖的回忆</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/达菲之家.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/达菲之家.jpg" data-name="达菲之家" title="达菲之家" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/达菲之家.jpg" alt="达菲之家" loading="lazy">
             <figcaption class="caption">达菲之家</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/这店真的贼拉远.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/这店真的贼拉远.jpg" data-name="这店真的贼拉远" title="这店真的贼拉远" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/这店真的贼拉远.jpg" alt="这店真的贼拉远" loading="lazy">
             <figcaption class="caption">这店真的贼拉远</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/这辈子第一次一餐炫四碗饭.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/这辈子第一次一餐炫四碗饭.jpg" data-name="这辈子第一次一餐炫四碗饭" title="这辈子第一次一餐炫四碗饭" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/这辈子第一次一餐炫四碗饭.jpg" alt="这辈子第一次一餐炫四碗饭" loading="lazy">
             <figcaption class="caption">这辈子第一次一餐炫四碗饭</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/遇见即使上上签.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/遇见即使上上签.jpg" data-name="遇见即使上上签" title="遇见即使上上签" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/遇见即使上上签.jpg" alt="遇见即使上上签" loading="lazy">
             <figcaption class="caption">遇见即使上上签</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/邓布利多说爱是世界上最伟大的魔法.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/邓布利多说爱是世界上最伟大的魔法.jpg" data-name="邓布利多说爱是世界上最伟大的魔法" title="邓布利多说爱是世界上最伟大的魔法" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/邓布利多说爱是世界上最伟大的魔法.jpg" alt="邓布利多说爱是世界上最伟大的魔法" loading="lazy">
             <figcaption class="caption">邓布利多说爱是世界上最伟大的魔法</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/闪送蜂蜜水ing.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/闪送蜂蜜水ing.jpg" data-name="闪送蜂蜜水ing" title="闪送蜂蜜水ing" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/闪送蜂蜜水ing.jpg" alt="闪送蜂蜜水ing" loading="lazy">
             <figcaption class="caption">闪送蜂蜜水ing</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/香 巨香.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/香 巨香.jpg" data-name="香 巨香" title="香 巨香" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/香 巨香.jpg" alt="香 巨香" loading="lazy">
             <figcaption class="caption">香 巨香</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/香喷喷.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/香喷喷.jpg" data-name="香喷喷" title="香喷喷" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/香喷喷.jpg" alt="香喷喷" loading="lazy">
             <figcaption class="caption">香喷喷</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/骗子.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/骗子.jpg" data-name="骗子" title="骗子" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/骗子.jpg" alt="骗子" loading="lazy">
             <figcaption class="caption">骗子</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/💍依旧主理人 理不发音.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/💍依旧主理人 理不发音.jpg" data-name="💍依旧主理人 理不发音" title="💍依旧主理人 理不发音" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/💍依旧主理人 理不发音.jpg" alt="💍依旧主理人 理不发音" loading="lazy">
             <figcaption class="caption">💍依旧主理人 理不发音</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/💍想成为你众所周知的挚爱.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/💍想成为你众所周知的挚爱.jpg" data-name="💍想成为你众所周知的挚爱" title="💍想成为你众所周知的挚爱" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/💍想成为你众所周知的挚爱.jpg" alt="💍想成为你众所周知的挚爱" loading="lazy">
             <figcaption class="caption">💍想成为你众所周知的挚爱</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/💍愿得一人心.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/💍愿得一人心.jpg" data-name="💍愿得一人心" title="💍愿得一人心" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/💍愿得一人心.jpg" alt="💍愿得一人心" loading="lazy">
             <figcaption class="caption">💍愿得一人心</figcaption>
         </figure>
-        <figure class="photo-card" data-src="photos/💍谢谢你在世界的角落找到我.jpg" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="photos/💍谢谢你在世界的角落找到我.jpg" data-name="💍谢谢你在世界的角落找到我" title="💍谢谢你在世界的角落找到我" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="photos/💍谢谢你在世界的角落找到我.jpg" alt="💍谢谢你在世界的角落找到我" loading="lazy">
             <figcaption class="caption">💍谢谢你在世界的角落找到我</figcaption>
         </figure>
@@ -868,14 +886,19 @@
 
     </div>
 
+    <!-- 灯箱：底部显示完整文件名 -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="preview">
+        <div class="lightbox-inner" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="preview">
+            <p class="lightbox-name" id="lightbox-name"></p>
+        </div>
     </div>
 
     <script>
-    function openLightbox(src) {
+    function openLightbox(src, name) {
         var lb = document.getElementById('lightbox');
         document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox-name').textContent = name || '';
         lb.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -887,7 +910,7 @@
         if (e.key === 'Escape') closeLightbox();
     });
 
-    /* ===== 吹蜡烛互动（吹完后展开内容区） ===== */
+    /* ===== 吹蜡烛互动 ===== */
     var candleBlown = false;
     function blowCandles() {
         if (candleBlown) return;

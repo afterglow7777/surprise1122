@@ -56,18 +56,18 @@ def get_files(folder, exts):
 
 def build_html(photos, audios, config):
     """生成HTML页面内容（美化版 + 互动版：吹蜡烛后展开照片/语音）
-    标题区：礼物盒🎁 + 飘浮星星✨（不再用蛋糕 emoji）
-    吹蜡烛区：纯 CSS 插画风蛋糕（分层蛋糕体 + 奶油 + 草莓 + 蜡烛 + 火焰）
-    其余互动：吹完展开内容、撒花、爱心迸发、漂浮爱心、点击爱心、灯箱
-    媒体文件使用相对路径引用，不再内联 Base64，避免 HTML 过大。"""
+    标题区：礼物盒🎁 + 飘浮星星✨
+    吹蜡烛区：纯 CSS 插画风蛋糕
+    照片标题：两行显示 + hover tooltip + 灯箱底部完整名
+    媒体文件使用相对路径引用，不再内联 Base64。"""
 
-    # ---- 照片卡片（使用相对路径） ----
+    # ---- 照片卡片（相对路径 + title + data-name） ----
     photo_cards = []
     for p in photos:
         rel_path = p.replace("\\", "/")
         name = os.path.splitext(os.path.basename(p))[0]
         photo_cards.append(f'''
-        <figure class="photo-card" data-src="{rel_path}" onclick="openLightbox(this.dataset.src)">
+        <figure class="photo-card" data-src="{rel_path}" data-name="{name}" title="{name}" onclick="openLightbox(this.dataset.src, this.dataset.name)">
             <img src="{rel_path}" alt="{name}" loading="lazy">
             <figcaption class="caption">{name}</figcaption>
         </figure>''')
@@ -75,7 +75,7 @@ def build_html(photos, audios, config):
     photos_html = "".join(photo_cards) if photo_cards else \
         '<p class="empty-tip">暂无照片，请在 photos 文件夹中添加照片～</p>'
 
-    # ---- 语音卡片（使用相对路径） ----
+    # ---- 语音卡片（相对路径） ----
     audio_cards = []
     for a in audios:
         ext = os.path.splitext(a)[1].lower()
@@ -137,7 +137,7 @@ def build_html(photos, audios, config):
 
     .page-wrap { position: relative; z-index: 1; }
 
-    /* ===== 英雄区（礼物盒 + 星星装饰，区别于蛋糕区） ===== */
+    /* ===== 英雄区（礼物盒 + 星星装饰） ===== */
     .hero {
         text-align: center; padding: 64px 24px 8px; position: relative;
         transition: padding 0.6s ease;
@@ -463,9 +463,17 @@ def build_html(photos, audios, config):
     }
     .photo-card.show:hover img { transform: scale(1.06); }
 
+    /* 方案一：两行显示，超出省略号 */
     .caption {
         padding: 10px 12px; font-size: 0.85rem; color: #7a5a68;
-        text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.35;
+        word-break: break-all;
+        min-height: calc(0.85rem * 1.35 * 2 + 20px);
     }
 
     .audio-card {
@@ -507,7 +515,7 @@ def build_html(photos, audios, config):
         45% { transform: scale(1.2); }
     }
 
-    /* ===== 灯箱 ===== */
+    /* ===== 灯箱（方案三：底部显示完整名） ===== */
     .lightbox {
         display: none; position: fixed; inset: 0;
         background: rgba(20, 10, 15, 0.92);
@@ -516,10 +524,19 @@ def build_html(photos, audios, config):
         align-items: center; justify-content: center; cursor: zoom-out;
     }
     .lightbox.active { display: flex; }
+    .lightbox-inner {
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+        max-width: 92vw; max-height: 92vh;
+    }
     .lightbox img {
-        max-width: 92vw; max-height: 88vh; border-radius: 12px;
+        max-width: 92vw; max-height: 78vh; border-radius: 12px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         animation: zoom 0.3s ease;
+    }
+    .lightbox-name {
+        color: #fff; font-size: 0.92rem; text-align: center;
+        max-width: 90vw; word-break: break-all; opacity: 0.9;
+        line-height: 1.4;
     }
     @keyframes zoom {
         from { transform: scale(0.92); opacity: 0; }
@@ -569,14 +586,16 @@ def build_html(photos, audios, config):
         .berry.b2 { right: 24px; }
         .berry.b3 { left: 52px; }
         .berry.b4 { right: 52px; }
+        .lightbox-name { font-size: 0.82rem; }
     }
     """
 
     # ---- JS ----
     js = """
-    function openLightbox(src) {
+    function openLightbox(src, name) {
         var lb = document.getElementById('lightbox');
         document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox-name').textContent = name || '';
         lb.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -588,7 +607,7 @@ def build_html(photos, audios, config):
         if (e.key === 'Escape') closeLightbox();
     });
 
-    /* ===== 吹蜡烛互动（吹完后展开内容区） ===== */
+    /* ===== 吹蜡烛互动 ===== */
     var candleBlown = false;
     function blowCandles() {
         if (candleBlown) return;
@@ -745,7 +764,7 @@ def build_html(photos, audios, config):
 
     <div class="page-wrap">
 
-        <!-- 英雄区：礼物盒 + 星星装饰（与蛋糕区区分） -->
+        <!-- 英雄区：礼物盒 + 星星装饰 -->
         <header class="hero" id="hero">
             <div class="hero-deco">
                 <span class="spark s1">✨</span>
@@ -809,8 +828,12 @@ def build_html(photos, audios, config):
 
     </div>
 
+    <!-- 灯箱：底部显示完整文件名 -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="preview">
+        <div class="lightbox-inner" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="preview">
+            <p class="lightbox-name" id="lightbox-name"></p>
+        </div>
     </div>
 
     <script>{js}</script>
